@@ -2,6 +2,9 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
+import "ens-contracts/registry/ENS.sol";
+import "ens-contracts/registry/ENSRegistry.sol";
+
 import "../Registrar.sol";
 import "../IAuthoriser.sol";
 
@@ -18,38 +21,57 @@ contract RulesEngine is IRulesEngine {
 }
 
 contract RegistrarTest is Test {
+  ENS private registry;
   Registrar public registrar;
 
   // brendan.pcc.eth
-  bytes32 constant node = 0xf349df259df246049048cc5bd391a3c3b5c72af5a860287139b7d45ba47c17db;
+  bytes32 private rootNode;
+  bytes32 private pccNode;
+
+  event NewOwner (bytes32 node, string label, address owner);
 
   function setUp() public {
-    registrar = new Registrar();
+    registry = new ENSRegistry();
+    rootNode = registry.setSubnodeOwner(bytes32(0x0), "eth", address(this));
+    pccNode = registry.setSubnodeOwner(rootNode, "pcc", address(this));
+
+    registrar = new Registrar(registry);
+    registry.setOwner(pccNode, address(registrar));
   }
 
   function testAddRootNode () public {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();
 
-    bytes32 node = 0xf349df259df246049048cc5bd391a3c3b5c72af5a860287139b7d45ba47c17db;
-    registrar.addRootNode(node, authoriser, rules);
+    registrar.addRootNode(pccNode, authoriser, rules);
 
-    assertEq(address(registrar.nodeAuthorisers(node)), address(authoriser));
-    assertEq(address(registrar.nodeRules(node)), address(rules));
+    assertEq(address(registrar.nodeAuthorisers(pccNode)), address(authoriser));
+    assertEq(address(registrar.nodeRules(pccNode)), address(rules));
   }
 
   function testValidLabelForNode () public {
     _setUpNode();
 
-    bool validLabel = registrar.valid(node, "banana");
+    bool validLabel = registrar.valid(pccNode, "banana");
 
     assertTrue(validLabel);
+  }
+
+  function testRegisterSubdomain () public {
+    _setUpNode();
+    vm.expectEmit(true, true, true, false);
+    emit NewOwner(pccNode, "banana", address(registrar));
+
+    registrar.register(pccNode, "banana", address(this));
   }
 
   function _setUpNode () private {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();
-    registrar.addRootNode(node, authoriser, rules);
+    registrar.addRootNode(pccNode, authoriser, rules);
   }
 
+  function _namehash (string memory node) public returns(bytes32) {
+    return keccak256(bytes(node));
+  }
 }

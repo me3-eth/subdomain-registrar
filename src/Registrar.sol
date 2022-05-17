@@ -24,7 +24,14 @@ contract Registrar is IRegistrar {
   }
  */
 
-  constructor () {}
+  modifier registeredNode (bytes32 node) {
+    require(address(nodeAuthorisers[node]) != address(0x0) || address(nodeRules[node]) != address(0x0));
+    _;
+  }
+
+  constructor (ENS _registry) {
+    ens = _registry;
+  }
 
   /// @dev TODO should be owner only
   function addRootNode (bytes32 node, IAuthoriser _authoriser, IRulesEngine _rules) external {
@@ -32,7 +39,9 @@ contract Registrar is IRegistrar {
     nodeRules[node] = _rules;
   }
 
-  function register (bytes32 node, bytes32 label, address owner) public {}
+  function register (bytes32 node, bytes32 label, address owner) public registeredNode(node) {
+    ens.setSubnodeOwner(node, label, address(this));
+  }
 
   function valid (bytes32 node, string memory label) public view returns (bool) {
     return nodeRules[node].isLabelValid(label);
