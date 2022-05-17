@@ -10,6 +10,7 @@ import "../IAuthoriser.sol";
 
 contract Authoriser is IAuthoriser {
   function authorise (uint256 tokenId, address sender) public view virtual returns (bool) {
+    require(tokenId > 0, "Must be non-zero tokenId");
     return true;
   }
 }
@@ -59,8 +60,8 @@ contract RegistrarTest is Test {
 
   function testRegisterSubdomain () public {
     _setUpNode();
-    vm.expectEmit(true, true, true, false);
-    emit NewOwner(pccNode, "banana", address(registrar));
+    vm.expectEmit(true, true, true, true);
+    emit NewOwner(pccNode, _namehash("banana"), address(this));
 
     registrar.register(pccNode, "banana", address(this));
   }
