@@ -28,7 +28,7 @@ contract RegistrarTest is Test {
   bytes32 private rootNode;
   bytes32 private pccNode;
 
-  event NewOwner (bytes32 node, string label, address owner);
+  event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
 
   function setUp() public {
     registry = new ENSRegistry();
