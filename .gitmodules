@@ -10,3 +10,6 @@
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/rari-capital/solmate
+[submodule "lib/name-wrapper"]
+	path = lib/name-wrapper
+	url = https://github.com/ensdomains/name-wrapper
