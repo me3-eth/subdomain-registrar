@@ -2,9 +2,10 @@
 pragma solidity 0.8.10;
 
 interface IAuthoriser {
-  function authorise(uint256, address) external view returns (bool);
+  function authorise(address, string memory) external view returns (bool);
 }
 
 interface IRulesEngine {
-  function isLabelValid (string memory label) external view returns (bool);
+  function isLabelValid (string memory) external view returns (bool);
+  function fuses () external view returns (uint96);
 }

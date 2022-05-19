@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
-import "./IAuthoriser.sol";
 import "ens-contracts/registry/ENS.sol";
+import "name-wrapper/interfaces/INameWrapper.sol";
 import { Owned } from  "solmate/auth/Owned.sol";
+
+import "./IAuthoriser.sol";
 
 interface IRegistrar {
   function register (bytes32 node, string memory label, address owner) external;
@@ -15,39 +17,56 @@ interface IRegistrar {
 
 contract Registrar is IRegistrar, Owned(msg.sender) {
   ENS private ens;
+  INameWrapper public nameWrapper;
 
+  address me3Resolver;
+  mapping(bytes32 => bool) public nodeEnabled;
   mapping(bytes32 => IAuthoriser) public nodeAuthorisers;
   mapping(bytes32 => IRulesEngine) public nodeRules;
 
-  modifier isAuthorised (bytes32 node, string memory label, uint256 tokenId) {
+  event Me3ResolverUpdated (address indexed resolverAddr);
+
+  modifier isAuthorised (bytes32 node, string memory label, address user) {
     IAuthoriser authoriser = nodeAuthorisers[node];
-
-    // TODO get rid of this
-    tokenId = uint256(keccak256(bytes(label)));
-
-    // TODO authoriser should decide which elements it wants to use for authorising
-    // TODO send everything
-    require(authoriser.authorise(tokenId, msg.sender), "Sender is not authorised");
+    require(authoriser.authorise(user, label), "User is not authorised");
     _;
   }
 
   modifier registeredNode (bytes32 node) {
-    require(address(nodeAuthorisers[node]) != address(0x0) || address(nodeRules[node]) != address(0x0));
+    require(nodeEnabled[node], "Node is not enabled");
     _;
   }
 
-  constructor (ENS _registry) {
+  constructor (ENS _registry, INameWrapper _nameWrapper, address _resolver) {
     ens = _registry;
+    nameWrapper = _nameWrapper;
+    me3Resolver = _resolver;
   }
 
+  /// @notice Add a new project to the directory
+  /// @param node The parent node that all subdomains will be based on
+  /// @param _authoriser The authorisation contract
+  /// @param _rules The rules around availability, validity, and usage
   function addRootNode (bytes32 node, IAuthoriser _authoriser, IRulesEngine _rules) external onlyOwner {
     nodeAuthorisers[node] = _authoriser;
     nodeRules[node] = _rules;
+    nodeEnabled[node] = true;
   }
 
-  function register (bytes32 node, string memory label, address owner) public registeredNode(node) isAuthorised(node, label, 0) {
-    bytes32 labelHash = keccak256(bytes(label));
-    ens.setSubnodeOwner(node, labelHash, owner);
+  function updateMe3Resolver (address newResolver) external onlyOwner {
+    require(newResolver != address(0x0), "Resolver must be a real contract");
+
+    me3Resolver = newResolver;
+    emit Me3ResolverUpdated(newResolver);
+  }
+
+  function register (bytes32 node, string memory label, address owner)
+    public
+    registeredNode(node)
+    isAuthorised(node, label, msg.sender)
+  {
+    // TODO get fuses
+    nameWrapper.setSubnodeRecordAndWrap(node, label, owner, me3Resolver, 0, 0);
   }
 
   function valid (bytes32 node, string memory label) public view returns (bool) {
@@ -55,6 +74,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   }
 
   function available (bytes32 node, string memory label) public view returns (bool) {
+    // should check with node rules first
+    // then check against registry
     return false;
   }
 }
