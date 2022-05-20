@@ -27,18 +27,9 @@ contract RulesEngine is IRulesEngine {
   }
 }
 
-contract MetaSvc is IMetadataService {
-  function uri (uint256) public view returns (string memory) {
-    return "";
-  }
-}
-
 contract RegistrarTest is Test {
-  ENS private registry;
-  Registrar public registrar;
-
   bytes32 private rootNode = keccak256(abi.encodePacked(bytes32(0x0), _namehash("eth")));
-  bytes32 private pccNode;
+  bytes32 private me3Node;
 
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
 
