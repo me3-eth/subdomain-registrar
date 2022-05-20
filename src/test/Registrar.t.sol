@@ -62,6 +62,14 @@ contract RegistrarTest is EnsSetup {
     registrar.register(testNode, "banana", address(this));
   }
 
+  function testDisableNode () public {
+    _setUpNode();
+    assertTrue(registrar.nodeEnabled(testNode));
+
+    registrar.setRootNodeState(testNode, false);
+    assertTrue(registrar.nodeEnabled(testNode) == false);
+  }
+
   function _setUpNode () private {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();

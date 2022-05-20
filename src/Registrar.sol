@@ -50,6 +50,11 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     nodeEnabled[node] = true;
   }
 
+  /// @notice Enable or disable a root node
+  function setRootNodeState (bytes32 node, bool enabled) external onlyOwner {
+    nodeEnabled[node] = enabled;
+  }
+
   function updateMe3Resolver (address newResolver) external onlyOwner {
     require(newResolver != address(0x0), "Resolver must be a real contract");
 
