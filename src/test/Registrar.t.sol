@@ -28,6 +28,7 @@ contract RegistrarTest is EnsSetup {
   bytes32 private testNode = keccak256(abi.encodePacked(rootNode, namehash("testing")));
 
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
+  event ProjectStateChanged (bytes32 indexed node, bool enabled);
 
   function setUp() override public {
     super.setUp();
@@ -62,12 +63,25 @@ contract RegistrarTest is EnsSetup {
     registrar.register(testNode, "banana", address(this));
   }
 
-  function testDisableNode () public {
+  function testChangeNodeState () public {
     _setUpNode();
     assertTrue(registrar.nodeEnabled(testNode));
 
+    cheats.expectEmit(true, true, true, true);
+    emit ProjectStateChanged(testNode, false);
+
     registrar.setRootNodeState(testNode, false);
     assertTrue(registrar.nodeEnabled(testNode) == false);
+
+    cheats.expectEmit(true, true, true, true);
+    emit ProjectStateChanged(testNode, true);
+
+    registrar.setRootNodeState(testNode, true);
+    assertTrue(registrar.nodeEnabled(testNode));
+  }
+
+  function testFailChangeStateOnUnintializedProject () public {
+    registrar.setRootNodeState(testNode, true);
   }
 
   function _setUpNode () private {

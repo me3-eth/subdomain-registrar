@@ -23,6 +23,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   mapping(bytes32 => IRulesEngine) public nodeRules;
 
   event Me3ResolverUpdated (address indexed resolverAddr);
+  event ProjectStateChanged (bytes32 indexed node, bool enabled);
 
   modifier isAuthorised (bytes32 node, string memory label, address user) {
     IAuthoriser authoriser = nodeAuthorisers[node];
@@ -41,7 +42,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   }
 
   /// @notice Add a new project to the directory
-  /// @param node The parent node that all subdomains will be based on
+  /// @param node The project node that subdomains will be based on
   /// @param _authoriser The authorisation contract
   /// @param _rules The rules around availability, validity, and usage
   function addRootNode (bytes32 node, IAuthoriser _authoriser, IRulesEngine _rules) external onlyOwner {
@@ -51,7 +52,15 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   }
 
   /// @notice Enable or disable a root node
+  /// @param node The project node
+  /// @param enabled True for enabled, false for disabled
   function setRootNodeState (bytes32 node, bool enabled) external onlyOwner {
+    require(
+      address(nodeAuthorisers[node]) != address(0x0)
+        && address(nodeRules[node]) != address(0x0),
+      "Project must be initialized");
+
+    emit ProjectStateChanged(node, enabled);
     nodeEnabled[node] = enabled;
   }
 
