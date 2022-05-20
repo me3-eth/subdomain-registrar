@@ -22,6 +22,7 @@ interface CheatCodes {
   function prank (address) external;
   function store (address, bytes32, bytes32) external;
   function warp (uint256) external;
+  function expectEmit (bool, bool, bool, bool) external;
 }
 
 contract EnsSetup is DSTest {
@@ -36,7 +37,6 @@ contract EnsSetup is DSTest {
   PublicResolver public _defaultResolver;
 
   address constant public CONTROLLER_ADDR = 0x0000000000000000000000000000000000012345;
-  address constant public REGISTRANT_ADDR = 0x0000000000000000000000000000000000054321;
 
   bytes32 public ethNode = keccak256(abi.encodePacked(bytes32(0x0), namehash("eth")));
 
@@ -65,7 +65,7 @@ contract EnsSetup is DSTest {
 
     // register testing.eth
     cheats.prank(CONTROLLER_ADDR);
-    _baseRegistrar.register(uint256(namehash("testing")), REGISTRANT_ADDR, 86400);
+    _baseRegistrar.register(uint256(namehash("testing")), address(this), 86400);
 
     // use current public ENS registrar controller
     _defaultRegistrarController = new ETHRegistrarController(_baseRegistrar, _priceOracle, 60, 86400);

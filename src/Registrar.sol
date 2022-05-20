@@ -2,7 +2,6 @@
 pragma solidity 0.8.10;
 
 import "ens-contracts/registry/ENS.sol";
-import "name-wrapper/interfaces/INameWrapper.sol";
 import { Owned } from  "solmate/auth/Owned.sol";
 
 import "./IAuthoriser.sol";
@@ -17,7 +16,6 @@ interface IRegistrar {
 
 contract Registrar is IRegistrar, Owned(msg.sender) {
   ENS private ens;
-  INameWrapper public nameWrapper;
 
   address me3Resolver;
   mapping(bytes32 => bool) public nodeEnabled;
@@ -37,9 +35,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     _;
   }
 
-  constructor (ENS _registry, INameWrapper _nameWrapper, address _resolver) {
+  constructor (ENS _registry, address _resolver) {
     ens = _registry;
-    nameWrapper = _nameWrapper;
     me3Resolver = _resolver;
   }
 
@@ -65,8 +62,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     registeredNode(node)
     isAuthorised(node, label, msg.sender)
   {
-    // TODO get fuses
-    nameWrapper.setSubnodeRecordAndWrap(node, label, owner, me3Resolver, 0, 0);
+    ens.setSubnodeRecord(node, _namehash(label), owner, me3Resolver, 86400);
   }
 
   function valid (bytes32 node, string memory label) public view returns (bool) {
@@ -77,5 +73,9 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     // should check with node rules first
     // then check against registry
     return false;
+  }
+
+  function _namehash (string memory node) private pure returns(bytes32) {
+    return keccak256(bytes(node));
   }
 }
