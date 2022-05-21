@@ -71,11 +71,16 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     emit Me3ResolverUpdated(newResolver);
   }
 
+  /// @notice Register a subdomain under node
+  /// @param node The project node to use
+  /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
+  /// @param owner Who will own the subdomain
   function register (bytes32 node, string memory label, address owner)
     public
     registeredNode(node)
     isAuthorised(node, label, msg.sender)
   {
+    require(valid(node, label), "Check with project for valid subdomain");
     ens.setSubnodeRecord(node, _namehash(label), owner, me3Resolver, 86400);
   }
 
