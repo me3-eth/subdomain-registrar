@@ -5,6 +5,7 @@ import "ens-contracts/registry/ENS.sol";
 import { Owned } from  "solmate/auth/Owned.sol";
 
 import "./IAuthoriser.sol";
+import { Utilities } from "./Utils.sol";
 
 interface IRegistrar {
   function register (bytes32 node, string memory label, address owner, uint256 attachToTokenId) external;
@@ -81,7 +82,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     isAuthorised(node, msg.sender, tokenId)
   {
     require(valid(node, label), "Check with project for valid subdomain");
-    ens.setSubnodeRecord(node, _namehash(label), owner, me3Resolver, 86400);
+    ens.setSubnodeRecord(node, Utilities.namehash(label), owner, me3Resolver, 86400);
   }
 
   function valid (bytes32 node, string memory label) public view returns (bool) {
@@ -92,9 +93,5 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     // should check with node rules first
     // then check against registry
     return false;
-  }
-
-  function _namehash (string memory node) private pure returns(bytes32) {
-    return keccak256(bytes(node));
   }
 }
