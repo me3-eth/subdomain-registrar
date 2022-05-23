@@ -2,7 +2,8 @@
 pragma solidity 0.8.10;
 
 interface IAuthoriser {
-  function authorise(address, string memory) external view returns (bool);
+  // function forEditing(address, string memory) external view returns (bool);
+  function canRegister(address, uint256 tokenId) external view returns (bool);
 }
 
 interface IRulesEngine {

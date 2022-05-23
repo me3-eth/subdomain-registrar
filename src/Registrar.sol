@@ -7,7 +7,7 @@ import { Owned } from  "solmate/auth/Owned.sol";
 import "./IAuthoriser.sol";
 
 interface IRegistrar {
-  function register (bytes32 node, string memory label, address owner) external;
+  function register (bytes32 node, string memory label, address owner, uint256 attachToTokenId) external;
   function valid (bytes32 node, string memory label) external view returns (bool);
   function available (bytes32 node, string memory label) external view returns (bool);
 
@@ -25,9 +25,9 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   event Me3ResolverUpdated (address indexed resolverAddr);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
 
-  modifier isAuthorised (bytes32 node, string memory label, address user) {
+  modifier isAuthorised (bytes32 node, address user, uint256 tokenId) {
     IAuthoriser authoriser = nodeAuthorisers[node];
-    require(authoriser.authorise(user, label), "User is not authorised");
+    require(authoriser.canRegister(user, tokenId), "User is not authorised");
     _;
   }
 
@@ -75,10 +75,10 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   /// @param node The project node to use
   /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
   /// @param owner Who will own the subdomain
-  function register (bytes32 node, string memory label, address owner)
+  function register (bytes32 node, string memory label, address owner, uint256 tokenId)
     public
     registeredNode(node)
-    isAuthorised(node, label, msg.sender)
+    isAuthorised(node, msg.sender, tokenId)
   {
     require(valid(node, label), "Check with project for valid subdomain");
     ens.setSubnodeRecord(node, _namehash(label), owner, me3Resolver, 86400);

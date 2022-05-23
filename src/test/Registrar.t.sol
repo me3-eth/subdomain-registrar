@@ -6,7 +6,7 @@ import "../IAuthoriser.sol";
 import "./EnsSetup.sol";
 
 contract Authoriser is IAuthoriser {
-  function authorise (address sender, string memory label ) public view virtual returns (bool) {
+  function canRegister (address sender, uint256 tokenId) public view virtual returns (bool) {
     return true;
   }
 }
@@ -60,7 +60,7 @@ contract RegistrarTest is EnsSetup {
     cheats.expectEmit(true, true, true, true);
     emit NewOwner(testNode, namehash("banana"), address(this));
 
-    registrar.register(testNode, "banana", address(this));
+    registrar.register(testNode, "banana", address(this), 1);
   }
 
   function testChangeNodeState () public {
