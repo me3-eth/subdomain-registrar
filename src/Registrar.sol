@@ -15,10 +15,14 @@ interface IRegistrar {
   function addRootNode (bytes32 node, IAuthoriser authoriser, IRulesEngine rules) external;
 }
 
+/// @title Me3 Subdomain Registrar
+/// @author charchar.eth
+/// @notice Provides third-party projects with a common subdomain registration function
+/// @dev 0.1.0
 contract Registrar is IRegistrar, Owned(msg.sender) {
   ENS private ens;
 
-  address me3Resolver;
+  address public me3Resolver;
   mapping(bytes32 => bool) public nodeEnabled;
   mapping(bytes32 => IAuthoriser) public nodeAuthorisers;
   mapping(bytes32 => IRulesEngine) public nodeRules;
@@ -85,6 +89,10 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     ens.setSubnodeRecord(node, Utilities.namehash(label), owner, me3Resolver, 86400);
   }
 
+  /// @notice Check if a label is valid for a project
+  /// @param node The project node
+  /// @param label The subdomain label to validate
+  /// @return bool True if the label is valid, according to the project rules, false otherwise
   function valid (bytes32 node, string memory label) public view returns (bool) {
     return nodeRules[node].isLabelValid(label);
   }

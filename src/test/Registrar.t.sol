@@ -84,6 +84,16 @@ contract RegistrarTest is EnsSetup {
     registrar.setRootNodeState(testNode, true);
   }
 
+  function testValidLabel () public {
+    _setUpNode();
+    assertTrue(registrar.valid(testNode, "orange"));
+  }
+
+  function testFailCheckValidityWhenDisabled () public {
+    // fails because no rules have been setup for node
+    registrar.valid(testNode, "strawberry");
+  }
+
   function _setUpNode () private {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();
