@@ -20,8 +20,14 @@ contract NftAuthoriser is IAuthoriser, Owned(msg.sender) {
     merkleRoot = _merkleRoot;
   }
 
-  function canRegister (address user, uint256 tokenId) external view returns (bool) {
-    return nft.ownerOf(tokenId) == user;
+  /// @notice Update merkle root
+  /// @param _merkleRoot new merkle root
+  function updateMerkleRoot (bytes32 _merkleRoot) external onlyOwner {
+    merkleRoot = _merkleRoot;
+  }
+
+  function canRegister (address _user, uint256 _tokenId) external view returns (bool) {
+    return nft.ownerOf(_tokenId) == _user;
   }
 
   /*
