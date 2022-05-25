@@ -3,7 +3,7 @@ pragma solidity 0.8.10;
 
 import { Owned } from  "solmate/auth/Owned.sol";
 import { IAuthoriser, IRulesEngine } from "./IAuthoriser.sol";
-import { BlobParser } from "./LibraryBlobParser.sol";
+import { BlobParser } from "./lib/BlobParser.sol";
 
 interface IERC721 {
   function ownerOf(uint256 id) external view returns (address owner);
@@ -21,7 +21,7 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
   function canRegister (bytes32 _node, address _user, bytes[] memory blob) external view returns (bool) {
     require(blob.length == 1, "Only tokenId is required");
 
-    uint256 tokenId = BlobParser.sliceUint256(blob[0], 0);
+    uint256 tokenId = BlobParser.bytesToUint256(blob[0], 0);
     return nft.ownerOf(tokenId) == _user;
   }
 
