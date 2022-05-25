@@ -54,8 +54,19 @@ contract NftAuthoriserTest is Test {
   }
 
   function testInvalidLabel () public {
+    // max
     assertTrue(
       authoriser.isLabelValid("hey") == false
+    );
+
+    // one under
+    assertTrue(
+      authoriser.isLabelValid("hi") == false
+    );
+
+    // one over
+    assertTrue(
+      authoriser.isLabelValid("helo")
     );
   }
 }

@@ -25,8 +25,36 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     return nft.ownerOf(tokenId) == _user;
   }
 
-  function isLabelValid (string memory label) external view returns (bool) {
-    return _strlen(label) > 3;
+  function isLabelValid (string memory label) external view returns (bool isValid) {
+    uint256 maxLength = 3;
+    uint256 len;
+    uint256 i = 0;
+    uint256 bytelength = bytes(label).length;
+    isValid = false;
+
+    for(len = 0; i < bytelength; len++) {
+      if (len == maxLength) {
+        isValid = true;
+        break;
+      }
+
+      bytes1 b = bytes(label)[i];
+      if(b < 0x80) {
+        i += 1;
+      } else if (b < 0xE0) {
+        i += 2;
+      } else if (b < 0xF0) {
+        i += 3;
+      } else if (b < 0xF8) {
+        i += 4;
+      } else if (b < 0xFC) {
+        i += 5;
+      } else {
+        i += 6;
+      }
+    }
+
+    return isValid;
   }
 
   /*
@@ -36,29 +64,4 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
 
   }
  */
-
-	function _strlen(string memory str) internal pure returns (uint) {
-		uint len;
-		uint i = 0;
-		uint bytelength = bytes(str).length;
-
-		for(len = 0; i < bytelength; len++) {
-			bytes1 b = bytes(str)[i];
-			if(b < 0x80) {
-				i += 1;
-			} else if (b < 0xE0) {
-				i += 2;
-			} else if (b < 0xF0) {
-				i += 3;
-			} else if (b < 0xF8) {
-				i += 4;
-			} else if (b < 0xFC) {
-				i += 5;
-			} else {
-				i += 6;
-			}
-		}
-
-		return len;
-	}
 }
