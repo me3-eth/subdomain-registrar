@@ -8,7 +8,7 @@ import "./IAuthoriser.sol";
 import { Utilities } from "./Utils.sol";
 
 interface IRegistrar {
-  function register (bytes32 node, string memory label, address owner, uint256 attachToTokenId) external;
+  function register (bytes32 node, string memory label, address owner, bytes[] memory additionalData) external;
   function valid (bytes32 node, string memory label) external view returns (bool);
   function available (bytes32 node, string memory label) external view returns (bool);
 
@@ -30,12 +30,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   event Me3ResolverUpdated (address indexed resolverAddr);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
 
-  modifier isAuthorised (bytes32 node, address user, uint256 tokenId) {
+  modifier isAuthorised (bytes32 node, address user, bytes[] memory blob) {
     IAuthoriser authoriser = nodeAuthorisers[node];
-
-    // TODO should get this from outside
-    bytes[] memory blob = new bytes[](1);
-    blob[0] = abi.encodePacked(tokenId); // encode tokenId
 
     require(authoriser.canRegister(node, user, blob), "User is not authorised");
     _;
@@ -85,10 +81,10 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   /// @param node The project node to use
   /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
   /// @param owner Who will own the subdomain
-  function register (bytes32 node, string memory label, address owner, uint256 tokenId)
+  function register (bytes32 node, string memory label, address owner, bytes[] memory blob)
     public
     registeredNode(node)
-    isAuthorised(node, msg.sender, tokenId)
+    isAuthorised(node, msg.sender, blob)
   {
     require(valid(node, label), "Check with project for valid subdomain");
     // require(available(node, label), "Subdomain is not available");

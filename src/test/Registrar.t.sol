@@ -59,7 +59,12 @@ contract RegistrarTest is EnsSetup {
     _setUpNode();
     cheats.expectEmit(true, true, true, true);
     emit NewOwner(testNode, namehash("banana"), address(this));
-    registrar.register(testNode, "banana", address(this), 1);
+
+    uint256 tokenId = 1;
+    bytes[] memory blob = new bytes[](1);
+    blob[0] = abi.encodePacked(tokenId); // encode tokenId
+
+    registrar.register(testNode, "banana", address(this), blob);
   }
 
   function testChangeNodeState () public {

@@ -50,11 +50,32 @@ Subdomains...
 
 #### canRegister
 
+Follows [IAuthoriser](#iauthoriser) interface.
+
+Blob structure (in pseudocode):
+
+```
+[
+  asBytes(tokenId)
+]
+```
+
+Blob structure (in javascript):
+
+```js
+const tokenId = '3728' // most apis return a string
+const blob = [
+  BigNumber.from(tokenId).toHexString()
+]
+```
+
 #### isLabelValid
 
 #### labelTokenId
 
 #### nft
+
+Public variable, is the address of the NFT that this authoriser relies on.
 
 ## Registrar
 
