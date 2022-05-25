@@ -24,7 +24,7 @@ contract NftAuthoriserTest is Test {
 
   function setUp () public {
     nft = new ERC721("It does not", "MTTR");
-    authoriser = new NftAuthoriser(address(nft), 0x0);
+    authoriser = new NftAuthoriser(address(nft));
   }
 
   function testCanRegister () public {
