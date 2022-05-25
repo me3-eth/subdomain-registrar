@@ -32,7 +32,12 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
   modifier isAuthorised (bytes32 node, address user, uint256 tokenId) {
     IAuthoriser authoriser = nodeAuthorisers[node];
-    require(authoriser.canRegister(user, tokenId), "User is not authorised");
+
+    // TODO should get this from outside
+    bytes[] memory blob = new bytes[](1);
+    blob[0] = abi.encodePacked(tokenId); // encode tokenId
+
+    require(authoriser.canRegister(node, user, blob), "User is not authorised");
     _;
   }
 
@@ -86,6 +91,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     isAuthorised(node, msg.sender, tokenId)
   {
     require(valid(node, label), "Check with project for valid subdomain");
+    // require(available(node, label), "Subdomain is not available");
+
     ens.setSubnodeRecord(node, Utilities.namehash(label), owner, me3Resolver, 86400);
   }
 

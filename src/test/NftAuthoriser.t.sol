@@ -28,15 +28,34 @@ contract NftAuthoriserTest is Test {
   }
 
   function testCanRegister () public {
+    bytes[] memory blob = new bytes[](1);
+    blob[0] = abi.encodePacked(uint256(1)); // encode tokenId
+
     assertTrue(
-      authoriser.canRegister(address(this), 1)
+      authoriser.canRegister(0x0, address(this), blob)
     );
   }
 
   function testCannotRegister () public {
     // Based on this fake NFT, only tokens 1 and 2 are registered to the address
+
+    bytes[] memory blob = new bytes[](1);
+    blob[0] = abi.encodePacked(uint256(6)); // encode tokenId
+
     assertTrue(
-      authoriser.canRegister(address(this), 5) == false
+      authoriser.canRegister(0x0, address(this), blob) == false
+    );
+  }
+
+  function testValidLabel () public {
+    assertTrue(
+      authoriser.isLabelValid("banana")
+    );
+  }
+
+  function testInvalidLabel () public {
+    assertTrue(
+      authoriser.isLabelValid("hey") == false
     );
   }
 }

@@ -2,13 +2,14 @@
 pragma solidity 0.8.10;
 
 import { Owned } from  "solmate/auth/Owned.sol";
-import { IAuthoriser } from "./IAuthoriser.sol";
+import { IAuthoriser, IRulesEngine } from "./IAuthoriser.sol";
+import { BlobParser } from "./LibraryBlobParser.sol";
 
 interface IERC721 {
   function ownerOf(uint256 id) external view returns (address owner);
 }
 
-contract NftAuthoriser is IAuthoriser, Owned(msg.sender) {
+contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
   IERC721 public nft;
 
   mapping(string => uint256) public labelTokenId;
@@ -17,8 +18,15 @@ contract NftAuthoriser is IAuthoriser, Owned(msg.sender) {
     nft = IERC721(_nft);
   }
 
-  function canRegister (address _user, uint256 _tokenId) external view returns (bool) {
-    return nft.ownerOf(_tokenId) == _user;
+  function canRegister (bytes32 _node, address _user, bytes[] memory blob) external view returns (bool) {
+    require(blob.length == 1, "Only tokenId is required");
+
+    uint256 tokenId = BlobParser.sliceUint256(blob[0], 0);
+    return nft.ownerOf(tokenId) == _user;
+  }
+
+  function isLabelValid (string memory label) external view returns (bool) {
+    return _strlen(label) > 3;
   }
 
   /*
@@ -28,4 +36,29 @@ contract NftAuthoriser is IAuthoriser, Owned(msg.sender) {
 
   }
  */
+
+	function _strlen(string memory str) internal pure returns (uint) {
+		uint len;
+		uint i = 0;
+		uint bytelength = bytes(str).length;
+
+		for(len = 0; i < bytelength; len++) {
+			bytes1 b = bytes(str)[i];
+			if(b < 0x80) {
+				i += 1;
+			} else if (b < 0xE0) {
+				i += 2;
+			} else if (b < 0xF0) {
+				i += 3;
+			} else if (b < 0xF8) {
+				i += 4;
+			} else if (b < 0xFC) {
+				i += 5;
+			} else {
+				i += 6;
+			}
+		}
+
+		return len;
+	}
 }
