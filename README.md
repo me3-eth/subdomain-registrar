@@ -6,6 +6,13 @@ Glossary:
 * **Subdomain**: an ENS subnode attached to an associated Project node (eg: someone.pcc.eth)
 * **Authoriser**: a contract that defines the authorisation rules for a project
 
+## Deployments
+
+* Registrar: `0x9f2daf90c4323b529c31a40520a5fa63eb601b84` on:
+  * Rinkeby
+* NftAuthoriser: `0x0c24293b6d874e830789ed0948bed9935d4a4fdb` on:
+  * Rinkeby
+
 ## Project Controls
 
 NFT projects have the following set of controls for subdomain registration:
