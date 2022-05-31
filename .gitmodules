@@ -16,3 +16,6 @@
 [submodule "lib/buffer"]
 	path = lib/buffer
 	url = https://github.com/ensdomains/buffer
+[submodule "lib/forge-ens"]
+	path = lib/forge-ens
+	url = https://github.com/me3-eth/forge-ens
