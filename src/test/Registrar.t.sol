@@ -27,6 +27,7 @@ contract RegistrarTest is EnsSetup {
   bytes32 private testNode = keccak256(abi.encodePacked(ethNode, keccak256("testing")));
 
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
+  event SubnodeRegistered (bytes32 indexed node, bytes32 indexed label, address owner);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
 
   function setUp() override public {
@@ -58,6 +59,8 @@ contract RegistrarTest is EnsSetup {
     _setUpNode();
     cheats.expectEmit(true, true, true, true);
     emit NewOwner(testNode, labelhash("banana"), address(this));
+    cheats.expectEmit(true, true, true, true);
+    emit SubnodeRegistered(testNode, labelhash("banana"), address(this));
 
     uint256 tokenId = 1;
     bytes[] memory blob = new bytes[](1);

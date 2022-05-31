@@ -29,6 +29,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
   event Me3ResolverUpdated (address indexed resolverAddr);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
+  event SubnodeRegistered (bytes32 indexed node, bytes32 indexed label, address owner);
 
   modifier isAuthorised (bytes32 node, address user, bytes[] memory blob) {
     IAuthoriser authoriser = nodeAuthorisers[node];
@@ -89,7 +90,9 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     require(valid(node, label), "Check with project for valid subdomain");
     // require(available(node, label), "Subdomain is not available");
 
-    ens.setSubnodeRecord(node, Utilities.labelhash(label), owner, me3Resolver, 86400);
+    bytes32 hashedLabel = Utilities.labelhash(label);
+    ens.setSubnodeRecord(node, hashedLabel, owner, me3Resolver, 86400);
+    emit SubnodeRegistered(node, hashedLabel, owner);
   }
 
   /// @notice Check if a label is valid for a project
