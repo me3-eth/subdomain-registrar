@@ -24,8 +24,7 @@ contract RulesEngine is IRulesEngine {
 contract RegistrarTest is EnsSetup {
   Registrar public registrar;
 
-  bytes32 private rootNode = keccak256(abi.encodePacked(bytes32(0x0), namehash("eth")));
-  bytes32 private testNode = keccak256(abi.encodePacked(rootNode, namehash("testing")));
+  bytes32 private testNode = keccak256(abi.encodePacked(ethNode, keccak256("testing")));
 
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
@@ -58,13 +57,15 @@ contract RegistrarTest is EnsSetup {
   function testRegisterSubdomain () public {
     _setUpNode();
     cheats.expectEmit(true, true, true, true);
-    emit NewOwner(testNode, namehash("banana"), address(this));
+    emit NewOwner(testNode, labelhash("banana"), address(this));
 
     uint256 tokenId = 1;
     bytes[] memory blob = new bytes[](1);
     blob[0] = abi.encodePacked(tokenId); // encode tokenId
 
     registrar.register(testNode, "banana", address(this), blob);
+    // ethers.utils.namehash('banana.testing.eth')
+    assertEq(_ens.owner(0xb37745cd3fb26eaf8111ff523d7fcacd8cbe195f73df099faf979571b54e327b), address(this));
   }
 
   function testChangeNodeState () public {

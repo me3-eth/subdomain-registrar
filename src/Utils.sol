@@ -2,7 +2,11 @@
 pragma solidity 0.8.10;
 
 library Utilities {
-  function namehash (string memory node) internal pure returns(bytes32) {
-    return keccak256(bytes(node));
+  function labelhash (string memory label) internal pure returns(bytes32) {
+    return keccak256(bytes(label));
+  }
+
+  function namehash (bytes32 node, bytes32 label) internal pure returns(bytes32) {
+    return keccak256(abi.encodePacked(node, label));
   }
 }

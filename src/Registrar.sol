@@ -89,7 +89,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     require(valid(node, label), "Check with project for valid subdomain");
     // require(available(node, label), "Subdomain is not available");
 
-    ens.setSubnodeRecord(node, Utilities.namehash(label), owner, me3Resolver, 86400);
+    ens.setSubnodeRecord(node, Utilities.labelhash(label), owner, me3Resolver, 86400);
   }
 
   /// @notice Check if a label is valid for a project

@@ -38,9 +38,10 @@ contract EnsSetup is DSTest {
 
   address constant public CONTROLLER_ADDR = 0x0000000000000000000000000000000000012345;
 
-  bytes32 public ethNode = keccak256(abi.encodePacked(bytes32(0x0), namehash("eth")));
+  // value taken from ENS contract: BulkRenewal @ 3b52784
+  bytes32 public ethNode = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
 
-  function namehash (string memory node) public returns(bytes32) {
+  function labelhash (string memory node) public returns(bytes32) {
     return keccak256(bytes(node));
   }
 
@@ -65,7 +66,7 @@ contract EnsSetup is DSTest {
 
     // register testing.eth
     cheats.prank(CONTROLLER_ADDR);
-    _baseRegistrar.register(uint256(namehash("testing")), address(this), 86400);
+    _baseRegistrar.register(uint256(labelhash("testing")), address(this), 86400);
 
     // use current public ENS registrar controller
     _defaultRegistrarController = new ETHRegistrarController(_baseRegistrar, _priceOracle, 60, 86400);
