@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
+import { EnsSetup } from "forge-ens/EnsSetup.sol";
 import "../Registrar.sol";
 import "../IAuthoriser.sol";
-import "./EnsSetup.sol";
 
 contract Authoriser is IAuthoriser {
   function canRegister (bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
@@ -24,8 +24,6 @@ contract RulesEngine is IRulesEngine {
 contract RegistrarTest is EnsSetup {
   Registrar public registrar;
 
-  bytes32 private testNode = keccak256(abi.encodePacked(ethNode, keccak256("testing")));
-
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
   event SubnodeRegistered (bytes32 indexed node, bytes32 indexed label, address owner);
   event ProjectStateChanged (bytes32 indexed node, bool enabled);
@@ -41,70 +39,70 @@ contract RegistrarTest is EnsSetup {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();
 
-    registrar.addRootNode(testNode, authoriser, rules);
+    registrar.addRootNode(demoNode, authoriser, rules);
 
-    assertEq(address(registrar.nodeAuthorisers(testNode)), address(authoriser));
-    assertEq(address(registrar.nodeRules(testNode)), address(rules));
+    assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
+    assertEq(address(registrar.nodeRules(demoNode)), address(rules));
   }
 
   function testValidLabelForNode () public {
     _setUpNode();
 
-    bool validLabel = registrar.valid(testNode, "banana");
+    bool validLabel = registrar.valid(demoNode, "banana");
 
     assertTrue(validLabel);
   }
 
   function testRegisterSubdomain () public {
     _setUpNode();
-    cheats.expectEmit(true, true, true, true);
-    emit NewOwner(testNode, labelhash("banana"), address(this));
-    cheats.expectEmit(true, true, true, true);
-    emit SubnodeRegistered(testNode, labelhash("banana"), address(this));
+    vm.expectEmit(true, true, true, true);
+    emit NewOwner(demoNode, labelhash("banana"), address(this));
+    vm.expectEmit(true, true, true, true);
+    emit SubnodeRegistered(demoNode, labelhash("banana"), address(this));
 
     uint256 tokenId = 1;
     bytes[] memory blob = new bytes[](1);
     blob[0] = abi.encodePacked(tokenId); // encode tokenId
 
-    registrar.register(testNode, "banana", address(this), blob);
+    registrar.register(demoNode, "banana", address(this), blob);
     // ethers.utils.namehash('banana.testing.eth')
-    assertEq(_ens.owner(0xb37745cd3fb26eaf8111ff523d7fcacd8cbe195f73df099faf979571b54e327b), address(this));
+    assertEq(_ens.owner(0x75d7e6a57d4e6c17065398c8221d84ff969c52008bbb1e65e8650f2a39f2ef33), address(this));
   }
 
   function testChangeNodeState () public {
     _setUpNode();
-    assertTrue(registrar.nodeEnabled(testNode));
+    assertTrue(registrar.nodeEnabled(demoNode));
 
-    cheats.expectEmit(true, true, true, true);
-    emit ProjectStateChanged(testNode, false);
+    vm.expectEmit(true, true, true, true);
+    emit ProjectStateChanged(demoNode, false);
 
-    registrar.setRootNodeState(testNode, false);
-    assertTrue(registrar.nodeEnabled(testNode) == false);
+    registrar.setRootNodeState(demoNode, false);
+    assertTrue(registrar.nodeEnabled(demoNode) == false);
 
-    cheats.expectEmit(true, true, true, true);
-    emit ProjectStateChanged(testNode, true);
+    vm.expectEmit(true, true, true, true);
+    emit ProjectStateChanged(demoNode, true);
 
-    registrar.setRootNodeState(testNode, true);
-    assertTrue(registrar.nodeEnabled(testNode));
+    registrar.setRootNodeState(demoNode, true);
+    assertTrue(registrar.nodeEnabled(demoNode));
   }
 
   function testFailChangeStateOnUnintializedProject () public {
-    registrar.setRootNodeState(testNode, true);
+    registrar.setRootNodeState(demoNode, true);
   }
 
   function testValidLabel () public {
     _setUpNode();
-    assertTrue(registrar.valid(testNode, "orange"));
+    assertTrue(registrar.valid(demoNode, "orange"));
   }
 
   function testFailCheckValidityWhenDisabled () public {
     // fails because no rules have been setup for node
-    registrar.valid(testNode, "strawberry");
+    registrar.valid(demoNode, "strawberry");
   }
 
   function _setUpNode () private {
     IAuthoriser authoriser = new Authoriser();
     IRulesEngine rules = new RulesEngine();
-    registrar.addRootNode(testNode, authoriser, rules);
+    registrar.addRootNode(demoNode, authoriser, rules);
   }
 }
