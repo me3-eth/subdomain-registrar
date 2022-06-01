@@ -1,10 +1,6 @@
-openzeppelin-contracts/=lib/openzeppelin-contracts/
-@openzeppelin/=lib/openzeppelin-contracts/
 forge-std/=lib/forge-std/src/
 solmate/=lib/solmate/src/
 ds-test/=lib/ds-test/src/
 name-wrapper/=lib/name-wrapper/
-ens-contracts/=lib/ens-contracts/contracts/
-@ensdomains/ens-contracts/=lib/ens-contracts/
 hardhat/=lib/forge-std/src/
-@ensdomains/buffer/=lib/buffer/
+forge-ens/=lib/forge-ens/src/

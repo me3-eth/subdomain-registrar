@@ -1,18 +1,12 @@
 [submodule "lib/ds-test"]
 	path = lib/ds-test
 	url = https://github.com/dapphub/ds-test
-[submodule "lib/ens-contracts"]
-	path = lib/ens-contracts
-	url = https://github.com/ensdomains/ens-contracts
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/rari-capital/solmate
-[submodule "lib/openzeppelin-contracts"]
-	path = lib/openzeppelin-contracts
-	url = https://github.com/OpenZeppelin/openzeppelin-contracts
-[submodule "lib/buffer"]
-	path = lib/buffer
-	url = https://github.com/ensdomains/buffer
+[submodule "lib/forge-ens"]
+	path = lib/forge-ens
+	url = https://github.com/me3-eth/forge-ens
