@@ -10,7 +10,6 @@ import { Utilities } from "./Utils.sol";
 interface IRegistrar {
   function register (bytes32 node, string memory label, address owner, bytes[] memory additionalData) external;
   function valid (bytes32 node, string memory label) external view returns (bool);
-  function available (bytes32 node, string memory label) external view returns (bool);
 
   function addRootNode (bytes32 node, IAuthoriser authoriser, IRulesEngine rules) external;
 }
@@ -99,11 +98,11 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
   /// @param node The project node
   /// @param label The subdomain label to validate
   /// @return bool True if the label is valid, according to the project rules, false otherwise
-  function valid (bytes32 node, string memory label) public view returns (bool) {
+  function valid (bytes32 node, string memory label) public view registeredNode(node) returns (bool) {
     return nodeRules[node].isLabelValid(label);
   }
 
-  function available (bytes32 node, string memory label) public view returns (bool) {
+  function available (bytes32 node, string memory label) internal view returns (bool) {
     // should check with node rules first
     // then check against registry
     return false;
