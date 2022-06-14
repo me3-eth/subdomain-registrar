@@ -4,7 +4,13 @@ import {Owned} from "solmate/auth/Owned.sol";
 import {IAuthoriser} from "./IAuthoriser.sol";
 import {IRulesEngine} from "./IRulesEngine.sol";
 
+/// @title Lightweight ERC-721 interface
+/// @author charchar.eth
+/// @notice Only a limited set of functions is needed for NftAuthoriser
 interface IERC721 {
+    /// @notice Get the owner of given token ID
+    /// @param id Token ID
+    /// @return Address of the owner
     function ownerOf(uint256 id) external view returns (address owner);
 }
 
@@ -12,24 +18,20 @@ interface IERC721 {
 /// @author charchar.eth
 /// @notice Determine if a node can be registered or edited using holders of an NFT
 contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
+    /// @notice The NFT that is providing ownership details
     IERC721 public nft;
 
     constructor(address _nft) {
         nft = IERC721(_nft);
     }
 
-    /// @notice Determine if a node can be registered by a sender
-    /// @dev See IAuthoriser for example usage
-    /// @param node Fully qualified, namehashed ENS name
-    /// @param sender Address of the user who is attempting to register
-    /// @param authData Additional data used for authorising the request
-    /// @return True if the sender can register, false otherwise
+    /// @inheritdoc IAuthoriser
     function canRegister(
         bytes32 _node,
         address _user,
-        bytes memory blob
+        bytes memory authData
     ) external view returns (bool) {
-        (uint256 tokenId) = abi.decode(blob, (uint256));
+        (uint256 tokenId) = abi.decode(authData, (uint256));
         require(tokenId > 0, "Token ID must be above 0");
 
         return nft.ownerOf(tokenId) == _user;

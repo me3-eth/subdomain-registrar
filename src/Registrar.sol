@@ -31,6 +31,10 @@ interface IRegistrar {
         view
         returns (bool);
 
+    /// @notice Register a project as a subdomain provider
+    /// @param node The fully qualified, namehashed ENS name
+    /// @param authoriser The contract that will perform authorisation
+    /// @param rules The contract that will provide rules and validation
     function addRootNode(
         bytes32 node,
         IAuthoriser authoriser,
