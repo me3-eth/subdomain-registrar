@@ -19,7 +19,7 @@ interface IRegistrar {
         bytes32 node,
         string memory label,
         address owner,
-        bytes[] memory additionalData
+        bytes memory authData
     ) external;
 
     /// @notice Check if a label is valid for a project
@@ -83,11 +83,11 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     modifier isAuthorised(
         bytes32 node,
         address user,
-        bytes[] memory blob
+        bytes memory authData
     ) {
         IAuthoriser authoriser = nodeAuthorisers[node];
 
-        require(authoriser.canRegister(node, user, blob[0]), "User is not authorised");
+        require(authoriser.canRegister(node, user, authData), "User is not authorised");
         _;
     }
 
@@ -142,8 +142,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes32 node,
         string memory label,
         address owner,
-        bytes[] memory blob
-    ) public registeredNode(node) isAuthorised(node, msg.sender, blob) {
+        bytes memory authData
+    ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
         require(valid(node, label), "Check with project for valid subdomain");
 
         bytes32 hashedLabel = Utilities.labelhash(label);
