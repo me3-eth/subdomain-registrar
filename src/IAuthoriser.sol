@@ -25,11 +25,13 @@ interface IAuthoriser {
     /// @param authData Additional data used for authorising the request
     /// @return True if the sender can edit, false otherwise
     /// @custom:docs-example authdata.md
+    /*
     function canEdit(
         bytes32 node,
         address sender,
         bytes memory authData
     ) external view returns (bool);
+   */
 }
 
 interface IRulesEngine {

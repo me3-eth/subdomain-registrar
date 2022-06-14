@@ -6,7 +6,14 @@ import {Owned} from "solmate/auth/Owned.sol";
 import "./IAuthoriser.sol";
 import {Utilities} from "./Utils.sol";
 
+/// @title Subdomain Registrar Interface
+/// @author charchar.eth
+/// @notice Define the minimum methods needed for a subdomain registrar
 interface IRegistrar {
+    /// @notice Register a subdomain under node
+    /// @param node The project node to use
+    /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
+    /// @param owner Who will own the subdomain
     function register(
         bytes32 node,
         string memory label,
@@ -14,6 +21,10 @@ interface IRegistrar {
         bytes[] memory additionalData
     ) external;
 
+    /// @notice Check if a label is valid for a project
+    /// @param node The project node
+    /// @param label The subdomain label to validate
+    /// @return bool True if the label is valid, according to the project rules, false otherwise
     function valid(bytes32 node, string memory label)
         external
         view
@@ -26,20 +37,38 @@ interface IRegistrar {
     ) external;
 }
 
-/// @title Me3 Subdomain Registrar
+/// @title me3 Subdomain Registrar
 /// @author charchar.eth
 /// @notice Provides third-party projects with a common subdomain registration function
 /// @dev 0.1.0
 contract Registrar is IRegistrar, Owned(msg.sender) {
     ENS private ens;
 
+    /// @notice Address of the default resolver used when registering a subdomain
     address public me3Resolver;
+
+    /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
+
+    /// @notice Lookup authoriser contract by project node
     mapping(bytes32 => IAuthoriser) public nodeAuthorisers;
+
+    /// @notice Lookup rules contract by project node
     mapping(bytes32 => IRulesEngine) public nodeRules;
 
+    /// @notice The default resolver has changed
+    /// @param resolverAddr The new address of the resolver
     event Me3ResolverUpdated(address indexed resolverAddr);
+
+    /// @notice A project has been enabled/disabled
+    /// @param node The fully qualified, namehashed ENS name for the project
+    /// @param enabled True if the project is now enabled, false if now disabled
     event ProjectStateChanged(bytes32 indexed node, bool enabled);
+
+    /// @notice A subnode has been registered
+    /// @param node The fully qualified, namehashed ENS name for the project
+    /// @param label The registered label as keccack256
+    /// @param owner The registered owner
     event SubnodeRegistered(
         bytes32 indexed node,
         bytes32 indexed label,
@@ -86,25 +115,24 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     /// @param enabled True for enabled, false for disabled
     function setRootNodeState(bytes32 node, bool enabled) external onlyOwner {
         require(
-      address(nodeAuthorisers[node]) != address(0x0)
-        && address(nodeRules[node]) != address(0x0),
-      "Project must be initialized");
+          address(nodeAuthorisers[node]) != address(0x0)
+            && address(nodeRules[node]) != address(0x0),
+          "Project must be initialized");
 
         emit ProjectStateChanged(node, enabled);
         nodeEnabled[node] = enabled;
     }
 
-    function updateMe3Resolver(address newResolver) external onlyOwner {
+    /// @notice Change the default resolver to a new contract
+    /// @param newResolver Address of the new resolver contract
+    function changeMe3Resolver(address newResolver) external onlyOwner {
         require(newResolver != address(0x0), "Resolver must be a real contract");
 
         me3Resolver = newResolver;
         emit Me3ResolverUpdated(newResolver);
     }
 
-    /// @notice Register a subdomain under node
-    /// @param node The project node to use
-    /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
-    /// @param owner Who will own the subdomain
+    /// @inheritdoc IRegistrar
     function register(
         bytes32 node,
         string memory label,
@@ -118,10 +146,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         emit SubnodeRegistered(node, hashedLabel, owner);
     }
 
-    /// @notice Check if a label is valid for a project
-    /// @param node The project node
-    /// @param label The subdomain label to validate
-    /// @return bool True if the label is valid, according to the project rules, false otherwise
+    /// @inheritdoc IRegistrar
     function valid(bytes32 node, string memory label)
         public
         view
