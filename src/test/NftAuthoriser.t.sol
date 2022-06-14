@@ -1,4 +1,4 @@
-pragma solidity 0.8.10;
+pragma solidity >=0.8.10 < 0.9.0;
 
 import "forge-std/Test.sol";
 import "../NftAuthoriser.sol";
@@ -29,36 +29,22 @@ contract NftAuthoriserTest is Test {
     function testCanRegister() public {
         bytes memory blob = abi.encode(uint256(1));
 
-        assertTrue(
-      authoriser.canRegister(0x0, address(this), blob)
-    );
+        assertTrue(authoriser.canRegister(0x0, address(this), blob));
     }
 
     function testCannotRegister() public {
         bytes memory blob = abi.encode(uint256(6));
 
-        assertTrue(
-      authoriser.canRegister(0x0, address(this), blob) == false
-    );
+        assertTrue(authoriser.canRegister(0x0, address(this), blob) == false);
     }
 
     function testValidLabel() public {
-        assertTrue(
-      authoriser.isLabelValid("banana")
-    );
+        assertTrue(authoriser.isLabelValid("banana"));
+        assertTrue(authoriser.isLabelValid("helo"));
     }
 
     function testInvalidLabel() public {
-        assertTrue(
-      authoriser.isLabelValid("hey") == false
-    );
-
-        assertTrue(
-      authoriser.isLabelValid("hi") == false
-    );
-
-        assertTrue(
-      authoriser.isLabelValid("helo")
-    );
+        assertTrue(authoriser.isLabelValid("hey") == false);
+        assertTrue(authoriser.isLabelValid("hi") == false);
     }
 }

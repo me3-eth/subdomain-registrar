@@ -1,4 +1,4 @@
-pragma solidity 0.8.10;
+pragma solidity >=0.8.10 < 0.9.0;
 
 import {Owned} from "solmate/auth/Owned.sol";
 import {IAuthoriser, IRulesEngine} from "./IAuthoriser.sol";
@@ -8,15 +8,22 @@ interface IERC721 {
     function ownerOf(uint256 id) external view returns (address owner);
 }
 
+/// @title Authoriser using an NFT
+/// @author charchar.eth
+/// @notice Determine if a node can be registered or edited using holders of an NFT
 contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     IERC721 public nft;
-
-    mapping(string => uint256) public labelTokenId;
 
     constructor(address _nft) {
         nft = IERC721(_nft);
     }
 
+    /// @notice Determine if a node can be registered by a sender
+    /// @dev See IAuthoriser for example usage
+    /// @param node Fully qualified, namehashed ENS name
+    /// @param sender Address of the user who is attempting to register
+    /// @param authData Additional data used for authorising the request
+    /// @return True if the sender can register, false otherwise
     function canRegister(
         bytes32 _node,
         address _user,
@@ -28,38 +35,41 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
         return nft.ownerOf(tokenId) == _user;
     }
 
+    /// @notice Make sure label is at least four characters long, emojis supported
+    /// @param label User provided label
+    /// @return True if four or more characters, false otherwise
     function isLabelValid(string memory label)
         external
-        view
+        pure
         returns (bool isValid)
     {
-        uint256 maxLength = 3;
+        uint256 minLength = 3;
         uint256 len;
         uint256 i = 0;
-        uint256 bytelength = bytes(label).length;
+        uint256 byteLength = bytes(label).length;
         isValid = false;
 
-        for(len = 0; i < bytelength; len++) {
-      if (len == maxLength) {
-        isValid = true;
-        break;
-      }
+        for(len = 0; i < byteLength; len++) {
+          if (len == minLength) {
+            isValid = true;
+            break;
+          }
 
-      bytes1 b = bytes(label)[i];
-      if(b < 0x80) {
-        i += 1;
-      } else if (b < 0xE0) {
-        i += 2;
-      } else if (b < 0xF0) {
-        i += 3;
-      } else if (b < 0xF8) {
-        i += 4;
-      } else if (b < 0xFC) {
-        i += 5;
-      } else {
-        i += 6;
-      }
-    }
+          bytes1 b = bytes(label)[i];
+          if(b < 0x80) {
+            i += 1;
+          } else if (b < 0xE0) {
+            i += 2;
+          } else if (b < 0xF0) {
+            i += 3;
+          } else if (b < 0xF8) {
+            i += 4;
+          } else if (b < 0xFC) {
+            i += 5;
+          } else {
+            i += 6;
+          }
+        }
 
         return isValid;
     }

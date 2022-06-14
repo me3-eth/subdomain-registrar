@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.10 < 0.9.0;
 
 /// @title Authoriser interface
@@ -6,7 +5,6 @@ pragma solidity >=0.8.10 < 0.9.0;
 /// @notice Defines the API which a valid Authorising contract must meet
 /// @custom:docs-example iauthoriser.md
 interface IAuthoriser {
-
     /// @notice Determine if a node can be registered by a sender
     /// @dev See example for authData packing
     /// @param node Fully qualified, namehashed ENS name
