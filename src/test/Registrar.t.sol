@@ -2,7 +2,8 @@ pragma solidity 0.8.10;
 
 import {EnsSetup} from "forge-ens/EnsSetup.sol";
 import "../Registrar.sol";
-import "../IAuthoriser.sol";
+import {IAuthoriser} from "../IAuthoriser.sol";
+import {IRulesEngine} from "../IRulesEngine.sol";
 
 contract Authoriser is IAuthoriser {
     function canRegister(

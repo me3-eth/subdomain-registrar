@@ -3,7 +3,8 @@ pragma solidity 0.8.10;
 import "ens-contracts/registry/ENS.sol";
 import {Owned} from "solmate/auth/Owned.sol";
 
-import "./IAuthoriser.sol";
+import {IAuthoriser} from "./IAuthoriser.sol";
+import {IRulesEngine} from "./IRulesEngine.sol";
 import {Utilities} from "./Utils.sol";
 
 /// @title Subdomain Registrar Interface

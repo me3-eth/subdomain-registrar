@@ -33,7 +33,3 @@ interface IAuthoriser {
     ) external view returns (bool);
    */
 }
-
-interface IRulesEngine {
-    function isLabelValid(string memory) external view returns (bool);
-}

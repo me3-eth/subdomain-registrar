@@ -1,8 +1,8 @@
 pragma solidity >=0.8.10 < 0.9.0;
 
 import {Owned} from "solmate/auth/Owned.sol";
-import {IAuthoriser, IRulesEngine} from "./IAuthoriser.sol";
-import {BlobParser} from "./lib/BlobParser.sol";
+import {IAuthoriser} from "./IAuthoriser.sol";
+import {IRulesEngine} from "./IRulesEngine.sol";
 
 interface IERC721 {
     function ownerOf(uint256 id) external view returns (address owner);
