@@ -17,72 +17,52 @@ Glossary:
 
 NFT projects have the following set of controls for subdomain registration:
 
-* authorise which addresses can register a subdomain
+* [authorise](#authorisation) which addresses can register a subdomain
 * validate that a subdomain can be registered
 * decide who the subdomain owner is (the project or the registrant)
 
-## IAuthoriser
+## Authorisation
 
-A generic interface for checking registration and editing authorisation. Implementers are passed the node, sender, and a data blob. The data blob structure is implementation specific.
+There are two avenues of authorisation that a contract user can follow: registration and editing.
 
-The introduction of the data blob means a lot more checks are required on the implementer contract to validate authorisation in a safe way.
+Any project is able to create their own authorisation contract using the `IAuthoriser` interface:
 
-### Functions
-
-#### `canRegister(bytes32,address,bytes[]) external view returns (bool)`
-
-Parameters:
-
-* `bytes32 node` - The project node (second-level) which the domain will be registered under. Useful if the authoriser contract is multi-tenant.
-* `address sender` - The user that is requesting registration of the subdomain
-* `bytes[] blob` - The implementation-specific data blob
-
-## NFT Authoriser
-
-### Features
-
-Subdomains...
-
-* can only be registered by an NFT token holder
-* can only be edited by the current NFT holder
-* are owned by the authoriser contract
-* must be longer than 3 characters
-
-### Limitations
-
-* user who mints the subdomain does not own it
-* transferring the related token Id transfers edit access to new token holder
-
-### Functions
-
-#### canRegister
-
-Follows [IAuthoriser](#iauthoriser) interface.
-
-Blob structure (in pseudocode):
-
-```
-[
-  asBytes(tokenId)
-]
+```solidity
+interface IAuthoriser {
+    function canRegister(
+        bytes32 node,
+        address sender,
+        bytes memory blob
+    ) external view returns (bool);
+    
+    function canEdit(
+        bytes32 node,
+        address sender,
+        bytes memory blob
+    ) external view returns (bool);
+}
 ```
 
-Blob structure (in javascript):
+### Parameters
 
-```js
-const tokenId = '3728' // most apis return a string
-const blob = [
-  BigNumber.from(tokenId).toHexString()
-]
-```
+The authorisation functions take the same inputs but are split for more fine-grained
+authorisation logic.
 
-#### isLabelValid
+| Param               | Description                                                                           | Notes                                                                                               |
+| ---                 | ---                                                                                   | ---                                                                                                 |
+| `bytes32 node`      | The fully qualified ENS name, namehashed                                              | In Javascript, the value of this call: `ethers.utils.namehash('someone.somewhere.eth')`             |
+| `address sender`    | The `msg.sender` for `Registrar.register`                                             |                                                                                                     |
+| `bytes memory blob` | Additional data for authorisation, defined by the contract implementing `IAuthoriser` | Developer should perform a lot of saftey checks so that users do not pass arbitrary data for access |
 
-#### labelTokenId
+### Sample authorisation contract via `NftAuthoriser`
 
-#### nft
+We provide a simple authorisation contract for NFT projects. The contract checks
+for two things:
 
-Public variable, is the address of the NFT that this authoriser relies on.
+* Was the `tokenId` passed in the `blob`? This requires the `tokenId` to be non-zero
+* Is the token currently owned by the `sender`?
+
+If either condition fails, then authorisation fails.
 
 ## Registrar
 
