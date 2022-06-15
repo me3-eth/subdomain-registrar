@@ -69,8 +69,7 @@ contract RegistrarTest is EnsSetup {
         emit SubnodeRegistered(demoNode, labelhash("banana"), address(this));
 
         uint256 tokenId = 1;
-        bytes[] memory blob = new bytes[](1);
-        blob[0] = abi.encodePacked(tokenId);
+        bytes memory blob = abi.encode(tokenId);
 
         registrar.register(demoNode, "banana", address(this), blob);
 

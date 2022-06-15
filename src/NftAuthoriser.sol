@@ -10,7 +10,7 @@ import {IRulesEngine} from "./IRulesEngine.sol";
 interface IERC721 {
     /// @notice Get the owner of given token ID
     /// @param id Token ID
-    /// @return Address of the owner
+    /// @return owner Address of the owner
     function ownerOf(uint256 id) external view returns (address owner);
 }
 
@@ -39,7 +39,7 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
 
     /// @notice Make sure label is at least four characters long, emojis supported
     /// @param label User provided label
-    /// @return True if four or more characters, false otherwise
+    /// @return isValid True if four or more characters, false otherwise
     function isLabelValid(string memory label)
         external
         pure

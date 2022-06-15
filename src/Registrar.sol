@@ -78,6 +78,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes32 indexed node,
         bytes32 indexed label,
         address owner
+        // TODO need to also track the registrant
     );
 
     modifier isAuthorised(
@@ -141,7 +142,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     function register(
         bytes32 node,
         string memory label,
-        address owner,
+        address owner, // TODO remove, owner should come from rules
         bytes memory authData
     ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
         require(valid(node, label), "Check with project for valid subdomain");
