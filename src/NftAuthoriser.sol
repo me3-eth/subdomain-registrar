@@ -27,20 +27,19 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
 
     /// @inheritdoc IAuthoriser
     function canRegister(
-        bytes32 _node,
-        address _user,
+        bytes32 node,
+        address registrant,
         bytes memory authData
     ) external view returns (bool) {
         (uint256 tokenId) = abi.decode(authData, (uint256));
         require(tokenId > 0, "Token ID must be above 0");
 
-        return nft.ownerOf(tokenId) == _user;
+        return nft.ownerOf(tokenId) == registrant;
     }
 
     /// @notice Make sure label is at least four characters long, emojis supported
-    /// @param label User provided label
-    /// @return isValid True if four or more characters, false otherwise
-    function isLabelValid(string memory label)
+    /// @inheritdoc IRulesEngine
+    function isLabelValid(bytes32 node, string memory label)
         external
         pure
         returns (bool isValid)

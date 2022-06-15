@@ -15,6 +15,7 @@ interface IRegistrar {
     /// @param node The project node to use
     /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
     /// @param owner Who will own the subdomain
+    /// @param authData Additional data to help the authoriser authorise
     function register(
         bytes32 node,
         string memory label,
@@ -25,7 +26,7 @@ interface IRegistrar {
     /// @notice Check if a label is valid for a project
     /// @param node The project node
     /// @param label The subdomain label to validate
-    /// @return bool True if the label is valid, according to the project rules, false otherwise
+    /// @return True if the label is valid, according to the project rules, false otherwise
     function valid(bytes32 node, string memory label)
         external
         view
@@ -145,7 +146,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         address owner, // TODO remove, owner should come from rules
         bytes memory authData
     ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
-        require(valid(node, label), "Check with project for valid subdomain");
+        require(valid(node, label), "Check with project for valid subdomain requirements");
 
         bytes32 hashedLabel = Utilities.labelhash(label);
         ens.setSubnodeRecord(node, hashedLabel, owner, me3Resolver, 86400);
@@ -159,7 +160,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         registeredNode(node)
         returns (bool)
     {
-        return nodeRules[node].isLabelValid(label);
+        return nodeRules[node].isLabelValid(node, label);
     }
 
     function available(bytes32 node, string memory label)

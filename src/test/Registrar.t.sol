@@ -16,7 +16,7 @@ contract Authoriser is IAuthoriser {
 }
 
 contract RulesEngine is IRulesEngine {
-    function isLabelValid(string memory label) external view returns (bool) {
+    function isLabelValid(bytes32 node, string memory label) external view returns (bool) {
         return true;
     }
 
