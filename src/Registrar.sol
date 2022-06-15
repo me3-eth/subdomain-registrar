@@ -149,8 +149,12 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
         bytes32 hashedLabel = Utilities.labelhash(label);
         address owner = nodeRules[node].subnodeOwner(msg.sender);
+        address resolver = nodeRules[node].profileResolver(node, label, msg.sender);
+        if (resolver == address(0x0)) {
+          resolver = me3Resolver;
+        }
 
-        ens.setSubnodeRecord(node, hashedLabel, owner, me3Resolver, 86400);
+        ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
         emit SubnodeRegistered(node, hashedLabel, owner, msg.sender);
     }
 

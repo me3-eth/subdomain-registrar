@@ -37,6 +37,28 @@ contract RulesEngine is IRulesEngine {
     }
 }
 
+contract RulesEngineWithOwnResolver is IRulesEngine {
+    function isLabelValid(bytes32 node, string memory label)
+        external
+        view
+        returns (bool)
+    {
+        return true;
+    }
+
+    function subnodeOwner(address registrant) external view returns (address) {
+        return registrant;
+    }
+
+    function profileResolver(
+        bytes32 node,
+        string memory label,
+        address registrant
+    ) external view returns (address) {
+        return address(0xabc123);
+    }
+}
+
 contract RegistrarTest is EnsSetup {
     Registrar public registrar;
 
@@ -48,11 +70,12 @@ contract RegistrarTest is EnsSetup {
         address registrant
     );
     event ProjectStateChanged(bytes32 indexed node, bool enabled);
+    event Me3ResolverUpdated(address indexed resolverAddr);
 
     function setUp() public override {
         super.setUp();
 
-        registrar = new Registrar(_ens, address(0x0));
+        registrar = new Registrar(_ens, address(_defaultResolver));
         _ens.setApprovalForAll(address(registrar), true);
     }
 
@@ -98,6 +121,38 @@ contract RegistrarTest is EnsSetup {
 
         vm.expectRevert(bytes("Label must be available to register"));
         registrar.register(demoNode, "frens", blob);
+    }
+
+    function testRulesHasOwnResolverAtRegistration() public {
+        IAuthoriser authoriser = new Authoriser();
+        IRulesEngine rules = new RulesEngineWithOwnResolver();
+        registrar.addRootNode(demoNode, authoriser, rules);
+
+        address expectedResolver = address(0xabc123);
+
+        assertTrue(registrar.me3Resolver() != expectedResolver);
+
+        registrar.register(demoNode, "person", abi.encode(uint256(1)));
+
+        assertEq(_ens.resolver(namehash(demoNode, labelhash("person"))), expectedResolver);
+    }
+
+    function testChangeMe3Resolver(address newResolver) public {
+        vm.assume(newResolver != address(0x0));
+
+        _setUpNode();
+        vm.expectEmit(true, false, false, false);
+        emit Me3ResolverUpdated(newResolver);
+
+        registrar.changeMe3Resolver(newResolver);
+        assertEq(registrar.me3Resolver(), newResolver);
+    }
+
+    function testCannotChangeResolverToZero() public {
+        _setUpNode();
+
+        vm.expectRevert(bytes("Resolver must be a real contract"));
+        registrar.changeMe3Resolver(address(0x0));
     }
 
     function testChangeNodeState() public {
