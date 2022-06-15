@@ -48,20 +48,46 @@ interface IAuthoriser {
 The authorisation functions take the same inputs but are split for more fine-grained
 authorisation logic.
 
-| Param               | Description                                                                           | Notes                                                                                               |
-| ---                 | ---                                                                                   | ---                                                                                                 |
-| `bytes32 node`      | The fully qualified ENS name, namehashed                                              | In Javascript, the value of this call: `ethers.utils.namehash('someone.somewhere.eth')`             |
-| `address sender`    | The `msg.sender` for `Registrar.register`                                             |                                                                                                     |
-| `bytes memory blob` | Additional data for authorisation, defined by the contract implementing `IAuthoriser` | Developer should perform a lot of saftey checks so that users do not pass arbitrary data for access |
+| Param                   | Description                                                                           | Notes                                                                                               |
+| ---                     | ---                                                                                   | ---                                                                                                 |
+| `bytes32 node`          | The fully qualified ENS name, namehashed                                              | In Javascript, the value of this call: `ethers.utils.namehash('someone.somewhere.eth')`             |
+| `address sender`        | The `msg.sender` for `Registrar.register`                                             |                                                                                                     |
+| `bytes memory authData` | Additional data for authorisation, defined by the contract implementing `IAuthoriser` | Developer should perform a lot of saftey checks so that users do not pass arbitrary data for access |
 
-### Sample authorisation contract via `NftAuthoriser`
+### Example authorisation contract via `NftAuthoriser`
 
 We provide a simple authorisation contract for NFT projects. The contract checks
 for two things:
 
-* Was the `tokenId` passed in the `blob`? This requires the `tokenId` to be non-zero
+* Was the `tokenId` passed in the `authData`? This requires the `tokenId` to be non-zero
 * Is the token currently owned by the `sender`?
 
 If either condition fails, then authorisation fails.
 
 ![registration flow](docs/registration.svg)
+
+## Development
+
+### Testing
+
+```sh
+make test
+```
+
+### Static Analysis
+
+All `slither` calls should be made from repo root.
+
+**Generating callgraphs:**
+
+```sh
+rm docs/callgraphs/*.dot
+slither . --filter-paths "test|lib" --print call-graph
+mv *.dot docs/callgraphs/
+```
+
+**Generating checklist:**
+
+```sh
+slither . --filter-paths "test|lib" --checklist > docs/slither-checklist.md
+```
