@@ -16,15 +16,23 @@ contract Authoriser is IAuthoriser {
 }
 
 contract RulesEngine is IRulesEngine {
-    function isLabelValid(bytes32 node, string memory label) external view returns (bool) {
+    function isLabelValid(bytes32 node, string memory label)
+        external
+        view
+        returns (bool)
+    {
         return true;
     }
 
-    function subnodeOwner (address registrant) external view returns (address) {
+    function subnodeOwner(address registrant) external view returns (address) {
         return registrant;
     }
 
-    function profileResolver (bytes32 node, string memory label, address registrant) external view returns (address) {
+    function profileResolver(
+        bytes32 node,
+        string memory label,
+        address registrant
+    ) external view returns (address) {
         return address(0x0);
     }
 }

@@ -81,12 +81,16 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
 
     /// @inheritdoc IRulesEngine
     /// @dev The registrant is always the owner
-    function subnodeOwner (address registrant) external view returns (address) {
-      return registrant;
+    function subnodeOwner(address registrant) external view returns (address) {
+        return registrant;
     }
 
     /// @inheritdoc IRulesEngine
-    function profileResolver (bytes32 node, string memory label, address registrant) external view returns (address) {
-      return address(0x0);
+    function profileResolver(
+        bytes32 node,
+        string memory label,
+        address registrant
+    ) external view returns (address) {
+        return address(0x0);
     }
 }
