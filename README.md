@@ -64,15 +64,4 @@ for two things:
 
 If either condition fails, then authorisation fails.
 
-## Registrar
-
-### Functions
-
-#### Register
-
-The register reverts in the following cases:
-* if a project has not yet been enabled
-* if the project determines the registrant is not authorised
-* if the subdomain is valid, according to the project
-
-![registration flow](docs/registration-flow.png)
+![registration flow](docs/registration.svg)
