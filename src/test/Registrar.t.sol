@@ -44,7 +44,8 @@ contract RegistrarTest is EnsSetup {
     event SubnodeRegistered(
         bytes32 indexed node,
         bytes32 indexed label,
-        address owner
+        address owner,
+        address registrant
     );
     event ProjectStateChanged(bytes32 indexed node, bool enabled);
 
@@ -78,7 +79,7 @@ contract RegistrarTest is EnsSetup {
         vm.expectEmit(true, true, true, true);
         emit NewOwner(demoNode, labelhash("banana"), address(this));
         vm.expectEmit(true, true, true, true);
-        emit SubnodeRegistered(demoNode, labelhash("banana"), address(this));
+        emit SubnodeRegistered(demoNode, labelhash("banana"), address(this), address(this));
 
         uint256 tokenId = 1;
         bytes memory blob = abi.encode(tokenId);

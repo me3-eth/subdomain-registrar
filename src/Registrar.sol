@@ -73,11 +73,12 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     /// @param node The fully qualified, namehashed ENS name for the project
     /// @param label The registered label as keccack256
     /// @param owner The registered owner
+    /// @param registrant The address that requested registration
     event SubnodeRegistered(
         bytes32 indexed node,
         bytes32 indexed label,
-        address owner
-        // TODO need to also track the registrant
+        address owner,
+        address registrant
     );
 
     modifier isAuthorised(
@@ -149,7 +150,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         address owner = nodeRules[node].subnodeOwner(msg.sender);
 
         ens.setSubnodeRecord(node, hashedLabel, owner, me3Resolver, 86400);
-        emit SubnodeRegistered(node, hashedLabel, owner);
+        emit SubnodeRegistered(node, hashedLabel, owner, msg.sender);
     }
 
     /// @inheritdoc IRegistrar
