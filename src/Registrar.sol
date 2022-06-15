@@ -14,12 +14,10 @@ interface IRegistrar {
     /// @notice Register a subdomain under node
     /// @param node The project node to use
     /// @param label The subdomain text, eg the 'hopeless' in hopeless.abc.eth
-    /// @param owner Who will own the subdomain
     /// @param authData Additional data to help the authoriser authorise
     function register(
         bytes32 node,
         string memory label,
-        address owner,
         bytes memory authData
     ) external;
 
@@ -143,12 +141,13 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     function register(
         bytes32 node,
         string memory label,
-        address owner, // TODO remove, owner should come from rules
         bytes memory authData
     ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
         require(valid(node, label), "Check with project for valid subdomain requirements");
 
         bytes32 hashedLabel = Utilities.labelhash(label);
+        address owner = nodeRules[node].subnodeOwner(msg.sender);
+
         ens.setSubnodeRecord(node, hashedLabel, owner, me3Resolver, 86400);
         emit SubnodeRegistered(node, hashedLabel, owner);
     }

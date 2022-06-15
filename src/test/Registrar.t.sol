@@ -20,8 +20,8 @@ contract RulesEngine is IRulesEngine {
         return true;
     }
 
-    function fuses() external view returns (uint96) {
-        return 0;
+    function subnodeOwner (address registrant) external view returns (address) {
+        return registrant;
     }
 }
 
@@ -71,7 +71,7 @@ contract RegistrarTest is EnsSetup {
         uint256 tokenId = 1;
         bytes memory blob = abi.encode(tokenId);
 
-        registrar.register(demoNode, "banana", address(this), blob);
+        registrar.register(demoNode, "banana", blob);
 
         assertEq(_ens.owner(0x75d7e6a57d4e6c17065398c8221d84ff969c52008bbb1e65e8650f2a39f2ef33), address(this));
     }

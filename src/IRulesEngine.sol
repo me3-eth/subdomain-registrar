@@ -9,4 +9,9 @@ interface IRulesEngine {
     /// @param label The 'best' in 'best.bob.eth'
     /// @return True if label is valid, false otherwise
     function isLabelValid(bytes32 node, string memory label) external view returns (bool);
+
+    /// @notice Determine who should own the subnode
+    /// @param registrant The address that is registereing a subnode
+    /// @return The address that should own the subnode
+    function subnodeOwner(address registrant) external view returns (address);
 }
