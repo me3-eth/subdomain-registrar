@@ -90,14 +90,14 @@ contract RegistrarTest is EnsSetup {
     }
 
     function testCannotRegisterExistingSubdomain() public {
-      _setUpNode();
-      _ens.setSubnodeRecord(demoNode, labelhash("frens"), address(this), address(_defaultResolver), 86400);
+        _setUpNode();
+        _ens.setSubnodeRecord(demoNode, labelhash("frens"), address(this), address(_defaultResolver), 86400);
 
-      uint256 tokenId = 2;
-      bytes memory blob = abi.encode(tokenId);
+        uint256 tokenId = 2;
+        bytes memory blob = abi.encode(tokenId);
 
-      vm.expectRevert(bytes("Label must be available to register"));
-      registrar.register(demoNode, "frens", blob);
+        vm.expectRevert(bytes("Label must be available to register"));
+        registrar.register(demoNode, "frens", blob);
     }
 
     function testChangeNodeState() public {

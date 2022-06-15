@@ -45,4 +45,16 @@ contract NftAuthoriserTest is Test {
         assertTrue(authoriser.isLabelValid(0x0, "hey") == false);
         assertTrue(authoriser.isLabelValid(0x0, "hi") == false);
     }
+
+    function testSubnodeOwnerIsAlwaysRegistrant(address registrant) public {
+        assertTrue(authoriser.subnodeOwner(registrant) == registrant);
+    }
+
+    function testProfileResolverIsAlwaysZero(
+        bytes32 node,
+        string memory label,
+        address registrant
+    ) public {
+        assertTrue(authoriser.profileResolver(node, label, registrant) == address(0x0));
+    }
 }
