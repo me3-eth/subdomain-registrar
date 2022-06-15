@@ -21,8 +21,12 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     /// @notice The NFT that is providing ownership details
     IERC721 public nft;
 
-    constructor(address _nft) {
+    /// @notice The current profile resolver
+    address resolver;
+
+    constructor(address _nft, address _resolver) {
         nft = IERC721(_nft);
+        resolver = _resolver;
     }
 
     /// @inheritdoc IAuthoriser
@@ -79,5 +83,10 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     /// @dev The registrant is always the owner
     function subnodeOwner (address registrant) external view returns (address) {
       return registrant;
+    }
+
+    /// @inheritdoc IRulesEngine
+    function profileResolver (bytes32 node, string memory label, address registrant) external view returns (address) {
+      return address(0x0);
     }
 }

@@ -14,4 +14,11 @@ interface IRulesEngine {
     /// @param registrant The address that is registereing a subnode
     /// @return The address that should own the subnode
     function subnodeOwner(address registrant) external view returns (address);
+
+    /// @notice Determine the resolver contract to use for project profiles
+    /// @param node Fully qualified, namehashed ENS name
+    /// @param label The 'best' in 'best.bob.eth'
+    /// @param registrant The address that is registereing a subnode
+    /// @return The address of the resolver
+    function profileResolver (bytes32 node, string memory label, address registrant) external view returns (address);
 }

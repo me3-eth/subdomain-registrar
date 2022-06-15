@@ -23,6 +23,10 @@ contract RulesEngine is IRulesEngine {
     function subnodeOwner (address registrant) external view returns (address) {
         return registrant;
     }
+
+    function profileResolver (bytes32 node, string memory label, address registrant) external view returns (address) {
+        return address(0x0);
+    }
 }
 
 contract RegistrarTest is EnsSetup {
