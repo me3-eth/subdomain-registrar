@@ -145,6 +145,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes memory authData
     ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
         require(valid(node, label), "Check with project for valid subdomain requirements");
+        require(available(node, label), "Label must be available to register");
 
         bytes32 hashedLabel = Utilities.labelhash(label);
         address owner = nodeRules[node].subnodeOwner(msg.sender);
@@ -168,6 +169,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         view
         returns (bool)
     {
-        return false;
+        bytes32 fullNode = Utilities.namehash(node, Utilities.labelhash(label));
+        return ens.owner(fullNode) == address(0x0);
     }
 }
