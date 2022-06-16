@@ -1,8 +1,11 @@
+# 2022-06-16
+
 Summary
  - [missing-zero-check](#missing-zero-check) (2 results) (Low)
  - [reentrancy-events](#reentrancy-events) (1 results) (Low)
  - [solc-version](#solc-version) (6 results) (Informational)
  - [external-function](#external-function) (1 results) (Optimization)
+
 ## missing-zero-check
 Impact: Low
 Confidence: Medium
@@ -13,17 +16,18 @@ Confidence: Medium
 src/Registrar.sol#L109
 
 
- - [ ] ID-1
+ - [X] ID-1
 [NftAuthoriser.constructor(address,address)._resolver](src/NftAuthoriser.sol#L27) lacks a zero-check on :
 		- [resolver = _resolver](src/NftAuthoriser.sol#L29)
 
 src/NftAuthoriser.sol#L27
 
+**charchar:** Ignoring as zero is a valid value
 
 ## reentrancy-events
 Impact: Low
 Confidence: Medium
- - [ ] ID-2
+ - [X] ID-2
 Reentrancy in [Registrar.register(bytes32,string,bytes)](src/Registrar.sol#L142-L159):
 	External calls:
 	- [ens.setSubnodeRecord(node,hashedLabel,owner,resolver,86400)](src/Registrar.sol#L157)
@@ -36,46 +40,47 @@ src/Registrar.sol#L142-L159
 ## solc-version
 Impact: Informational
 Confidence: High
- - [ ] ID-3
+ - [X] ID-3
 Pragma version[>=0.8.10<0.9.0](src/IAuthoriser.sol#L1) is too complex
 
 src/IAuthoriser.sol#L1
 
 
- - [ ] ID-4
+ - [X] ID-4
 Pragma version[>=0.8.10<0.9.0](src/Utils.sol#L1) is too complex
 
 src/Utils.sol#L1
 
 
- - [ ] ID-5
+ - [X] ID-5
 solc-0.8.10 is not recommended for deployment
 
- - [ ] ID-6
+ - [X] ID-6
 Pragma version[>=0.8.10<0.9.0](src/NftAuthoriser.sol#L1) is too complex
 
 src/NftAuthoriser.sol#L1
 
 
- - [ ] ID-7
+ - [X] ID-7
 Pragma version[>=0.8.10<0.9.0](src/IRulesEngine.sol#L1) is too complex
 
 src/IRulesEngine.sol#L1
 
 
- - [ ] ID-8
+ - [X] ID-8
 Pragma version[0.8.10](src/Registrar.sol#L1) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
 
 src/Registrar.sol#L1
 
+**charchar:** Comfortable with this as 0.8.10 has been out since Nov 2021 and there are currently no known bugs
 
 ## external-function
 Impact: Optimization
 Confidence: High
- - [ ] ID-9
+ - [X] ID-9
 register(bytes32,string,bytes) should be declared external:
 	- [Registrar.register(bytes32,string,bytes)](src/Registrar.sol#L142-L159)
 
 src/Registrar.sol#L142-L159
 
-
+---

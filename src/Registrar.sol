@@ -1,4 +1,5 @@
-pragma solidity 0.8.10;
+// SPDX-License-Identifier: GPL-3.0-or-later
+pragma solidity ^0.8.10;
 
 import "ens-contracts/registry/ENS.sol";
 import {Owned} from "solmate/auth/Owned.sol";
@@ -143,7 +144,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes32 node,
         string memory label,
         bytes memory authData
-    ) public registeredNode(node) isAuthorised(node, msg.sender, authData) {
+    ) external registeredNode(node) isAuthorised(node, msg.sender, authData) {
         require(valid(node, label), "Check with project for valid subdomain requirements");
         require(available(node, label), "Label must be available to register");
 
@@ -154,8 +155,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
           resolver = fallbackResolver;
         }
 
-        ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
         emit SubnodeRegistered(node, hashedLabel, owner, msg.sender);
+        ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
     }
 
     /// @inheritdoc IRegistrar
