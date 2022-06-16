@@ -83,7 +83,7 @@ contract RegistrarTest is EnsSetup {
         address rules,
         bool enabled
     );
-    event Me3ResolverUpdated(address indexed resolverAddr);
+    event FallbackResolverUpdated(address indexed resolverAddr);
 
     function setUp() public override {
         super.setUp();
@@ -144,29 +144,29 @@ contract RegistrarTest is EnsSetup {
 
         address expectedResolver = address(0xabc123);
 
-        assertTrue(registrar.me3Resolver() != expectedResolver);
+        assertTrue(registrar.fallbackResolver() != expectedResolver);
 
         registrar.register(demoNode, "person", abi.encode(uint256(1)));
 
         assertEq(_ens.resolver(namehash(demoNode, labelhash("person"))), expectedResolver);
     }
 
-    function testChangeMe3Resolver(address newResolver) public {
+    function testChangeFallbackResolver(address newResolver) public {
         vm.assume(newResolver != address(0x0));
 
         _setUpNode();
         vm.expectEmit(true, false, false, false);
-        emit Me3ResolverUpdated(newResolver);
+        emit FallbackResolverUpdated(newResolver);
 
-        registrar.changeMe3Resolver(newResolver);
-        assertEq(registrar.me3Resolver(), newResolver);
+        registrar.changeFallbackResolver(newResolver);
+        assertEq(registrar.fallbackResolver(), newResolver);
     }
 
     function testCannotChangeResolverToZero() public {
         _setUpNode();
 
         vm.expectRevert(bytes("Resolver must be a real contract"));
-        registrar.changeMe3Resolver(address(0x0));
+        registrar.changeFallbackResolver(address(0x0));
     }
 
     function testChangeNodeState() public {

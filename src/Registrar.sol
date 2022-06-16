@@ -51,7 +51,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     ENS private ens;
 
     /// @notice Address of the default resolver used when registering a subdomain
-    address public me3Resolver;
+    address public fallbackResolver;
 
     /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
@@ -64,7 +64,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice The default resolver has changed
     /// @param resolverAddr The new address of the resolver
-    event Me3ResolverUpdated(address indexed resolverAddr);
+    event FallbackResolverUpdated(address indexed resolverAddr);
 
     /// @notice A project has been enabled/disabled
     /// @param node The fully qualified, namehashed ENS name for the project
@@ -108,7 +108,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     constructor(ENS _registry, address _resolver) {
         ens = _registry;
-        me3Resolver = _resolver;
+        fallbackResolver = _resolver;
     }
 
     /// @notice Add a new project to the directory
@@ -131,11 +131,11 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice Change the default resolver to a new contract
     /// @param newResolver Address of the new resolver contract
-    function changeMe3Resolver(address newResolver) external onlyOwner {
+    function changeFallbackResolver(address newResolver) external onlyOwner {
         require(newResolver != address(0x0), "Resolver must be a real contract");
 
-        me3Resolver = newResolver;
-        emit Me3ResolverUpdated(newResolver);
+        fallbackResolver = newResolver;
+        emit FallbackResolverUpdated(newResolver);
     }
 
     /// @inheritdoc IRegistrar
@@ -151,7 +151,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         address owner = nodeRules[node].subnodeOwner(msg.sender);
         address resolver = nodeRules[node].profileResolver(node, label, msg.sender);
         if (resolver == address(0x0)) {
-          resolver = me3Resolver;
+          resolver = fallbackResolver;
         }
 
         ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
