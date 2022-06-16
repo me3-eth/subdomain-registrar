@@ -41,6 +41,15 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
         return nft.ownerOf(tokenId) == registrant;
     }
 
+    /// @inheritdoc IAuthoriser
+    function canEdit(
+        bytes32 node,
+        address registrant,
+        bytes memory authData
+    ) external view returns (bool) {
+        return this.canRegister(node, registrant, authData);
+    }
+
     /// @notice Make sure label is at least four characters long, emojis supported
     /// @inheritdoc IRulesEngine
     function isLabelValid(bytes32 node, string memory label)

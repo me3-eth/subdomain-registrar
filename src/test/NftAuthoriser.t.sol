@@ -36,6 +36,16 @@ contract NftAuthoriserTest is Test {
         assertTrue(authoriser.canRegister(0x0, address(this), blob) == false);
     }
 
+    function testCanEdit() public {
+        bytes memory blob = abi.encode(uint256(1));
+        assertTrue(authoriser.canEdit(0x0, address(this), blob));
+    }
+
+    function testCannotEdit() public {
+        bytes memory blob = abi.encode(uint256(6));
+        assertTrue(authoriser.canEdit(0x0, address(this), blob) == false);
+    }
+
     function testValidLabel() public {
         assertTrue(authoriser.isLabelValid(0x0, "banana"));
         assertTrue(authoriser.isLabelValid(0x0, "helo"));

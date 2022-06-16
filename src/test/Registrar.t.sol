@@ -13,6 +13,14 @@ contract Authoriser is IAuthoriser {
     ) public view virtual returns (bool) {
         return true;
     }
+
+    function canEdit(
+        bytes32 node,
+        address sender,
+        bytes memory blob
+    ) public view virtual returns (bool) {
+        return true;
+    }
 }
 
 contract RulesEngine is IRulesEngine {
