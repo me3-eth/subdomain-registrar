@@ -1,0 +1,21 @@
+output: mythx.json
+format: json
+
+analyze:
+  mode: quick
+  group-name: "me3 protocol"
+  solc: 0.8.10
+  remappings:
+    - "forge-std/=lib/forge-std/src/"
+    - "ds-test/=lib/ds-test/src/"
+    - "buffer/=lib/forge-ens/lib/buffer/contracts/"
+    - "solmate/=lib/solmate/src/"
+    - "openzeppelin-contracts/=lib/forge-ens/lib/openzeppelin-contracts/"
+    - "ens-contracts/=lib/forge-ens/lib/ens-contracts/contracts/"
+    - "forge-ens/=lib/forge-ens/src/"
+  targets:
+    - "src/Registrar.sol"
+    - "src/NftAuthoriser.sol"
+    - "src/Utils.sol"
+    - "src/IAuthoriser.sol"
+    - "src/IRulesEngine.sol"
