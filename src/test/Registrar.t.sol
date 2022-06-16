@@ -77,7 +77,12 @@ contract RegistrarTest is EnsSetup {
         address owner,
         address registrant
     );
-    event ProjectStateChanged(bytes32 indexed node, bool enabled);
+    event ProjectStateChanged(
+        bytes32 indexed node,
+        address authoriser,
+        address rules,
+        bool enabled
+    );
     event Me3ResolverUpdated(address indexed resolverAddr);
 
     function setUp() public override {
@@ -91,10 +96,11 @@ contract RegistrarTest is EnsSetup {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngine();
 
-        registrar.addRootNode(demoNode, authoriser, rules);
+        registrar.setProjectNode(demoNode, authoriser, rules, true);
 
         assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
         assertEq(address(registrar.nodeRules(demoNode)), address(rules));
+        assertTrue(registrar.nodeEnabled(demoNode));
     }
 
     function testValidLabelForNode() public {
@@ -134,7 +140,7 @@ contract RegistrarTest is EnsSetup {
     function testRulesHasOwnResolverAtRegistration() public {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngineWithOwnResolver();
-        registrar.addRootNode(demoNode, authoriser, rules);
+        registrar.setProjectNode(demoNode, authoriser, rules, true);
 
         address expectedResolver = address(0xabc123);
 
@@ -167,21 +173,36 @@ contract RegistrarTest is EnsSetup {
         _setUpNode();
         assertTrue(registrar.nodeEnabled(demoNode));
 
-        vm.expectEmit(true, true, true, true);
-        emit ProjectStateChanged(demoNode, false);
+        IAuthoriser initialAuth = registrar.nodeAuthorisers(demoNode);
+        IRulesEngine initialRules = registrar.nodeRules(demoNode);
 
-        registrar.setRootNodeState(demoNode, false);
+        vm.expectEmit(true, true, true, true);
+        emit ProjectStateChanged(demoNode, address(initialAuth), address(initialRules), false);
+
+        registrar.setProjectNode(demoNode, initialAuth, initialRules, false);
         assertTrue(registrar.nodeEnabled(demoNode) == false);
 
-        vm.expectEmit(true, true, true, true);
-        emit ProjectStateChanged(demoNode, true);
+        IAuthoriser newAuth = new Authoriser();
+        IRulesEngine newRules = new RulesEngine();
 
-        registrar.setRootNodeState(demoNode, true);
+        vm.expectEmit(true, true, true, true);
+        emit ProjectStateChanged(demoNode, address(newAuth), address(newRules), true);
+
+        registrar.setProjectNode(demoNode, newAuth, newRules, true);
         assertTrue(registrar.nodeEnabled(demoNode));
     }
 
-    function testFailChangeStateOnUnintializedProject() public {
-        registrar.setRootNodeState(demoNode, true);
+    function testFuzzSetProjectNode(
+        bytes32 node,
+        address auth,
+        address rules,
+        bool enabled
+    ) public {
+        registrar.setProjectNode(node, IAuthoriser(auth), IRulesEngine(rules), enabled);
+
+        assertEq(address(registrar.nodeAuthorisers(node)), auth);
+        assertEq(address(registrar.nodeRules(node)), rules);
+        assertEq(registrar.nodeEnabled(node), enabled);
     }
 
     function testValidLabel() public {
@@ -196,6 +217,6 @@ contract RegistrarTest is EnsSetup {
     function _setUpNode() private {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngine();
-        registrar.addRootNode(demoNode, authoriser, rules);
+        registrar.setProjectNode(demoNode, authoriser, rules, true);
     }
 }

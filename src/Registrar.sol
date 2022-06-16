@@ -34,10 +34,12 @@ interface IRegistrar {
     /// @param node The fully qualified, namehashed ENS name
     /// @param authoriser The contract that will perform authorisation
     /// @param rules The contract that will provide rules and validation
-    function addRootNode(
+    /// @param enable Allow project auth and rules to run
+    function setProjectNode(
         bytes32 node,
         IAuthoriser authoriser,
-        IRulesEngine rules
+        IRulesEngine rules,
+        bool enable
     ) external;
 }
 
@@ -66,8 +68,15 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice A project has been enabled/disabled
     /// @param node The fully qualified, namehashed ENS name for the project
+    /// @param authoriser The address of the authorising contract
+    /// @param rules The address of the rules engine contract
     /// @param enabled True if the project is now enabled, false if now disabled
-    event ProjectStateChanged(bytes32 indexed node, bool enabled);
+    event ProjectStateChanged(
+        bytes32 indexed node,
+        address authoriser,
+        address rules,
+        bool enabled
+    );
 
     /// @notice A subnode has been registered
     /// @param node The fully qualified, namehashed ENS name for the project
@@ -104,29 +113,20 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice Add a new project to the directory
     /// @param node The project node that subdomains will be based on
-    /// @param _authoriser The authorisation contract
-    /// @param _rules The rules around availability, validity, and usage
-    function addRootNode(
+    /// @param authoriser The authorisation contract
+    /// @param rules The rules around availability, validity, and usage
+    /// @param enable Turn the project on or off
+    function setProjectNode(
         bytes32 node,
-        IAuthoriser _authoriser,
-        IRulesEngine _rules
+        IAuthoriser authoriser,
+        IRulesEngine rules,
+        bool enable
     ) external onlyOwner {
-        nodeAuthorisers[node] = _authoriser;
-        nodeRules[node] = _rules;
-        nodeEnabled[node] = true;
-    }
+        emit ProjectStateChanged(node, address(authoriser), address(rules), enable);
 
-    /// @notice Enable or disable a root node
-    /// @param node The project node
-    /// @param enabled True for enabled, false for disabled
-    function setRootNodeState(bytes32 node, bool enabled) external onlyOwner {
-        require(
-          address(nodeAuthorisers[node]) != address(0x0)
-            && address(nodeRules[node]) != address(0x0),
-          "Project must be initialized");
-
-        emit ProjectStateChanged(node, enabled);
-        nodeEnabled[node] = enabled;
+        nodeAuthorisers[node] = authoriser;
+        nodeRules[node] = rules;
+        nodeEnabled[node] = enable;
     }
 
     /// @notice Change the default resolver to a new contract
