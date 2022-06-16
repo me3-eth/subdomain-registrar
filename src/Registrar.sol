@@ -177,4 +177,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes32 fullNode = Utilities.namehash(node, Utilities.labelhash(label));
         return ens.owner(fullNode) == address(0x0);
     }
+
+    /**
+      No fallback or receive functions are implemented on purpose
+      */
 }

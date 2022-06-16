@@ -111,12 +111,23 @@ contract RegistrarTest is EnsSetup {
         assertTrue(validLabel);
     }
 
+    function testCannotSendEthToContract() public {
+      address payable payableRegistrar = payable(address(registrar));
+      (bool success,) = payableRegistrar.call{value: 1 ether}("");
+      assertEq(success, false);
+    }
+
+    function testFallbackReverts() public {
+      (bool success,) = address(registrar).call(abi.encodeWithSignature("thisisntreal()"));
+      assertEq(success, false);
+    }
+
     function testRegisterSubdomain() public {
         _setUpNode();
         vm.expectEmit(true, true, true, true);
-        emit NewOwner(demoNode, labelhash("banana"), address(this));
-        vm.expectEmit(true, true, true, true);
         emit SubnodeRegistered(demoNode, labelhash("banana"), address(this), address(this));
+        vm.expectEmit(true, true, true, true);
+        emit NewOwner(demoNode, labelhash("banana"), address(this));
 
         uint256 tokenId = 1;
         bytes memory blob = abi.encode(tokenId);
