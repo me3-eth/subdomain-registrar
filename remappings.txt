@@ -1,6 +1,0 @@
-forge-std/=lib/forge-std/src/
-solmate/=lib/solmate/src/
-ds-test/=lib/ds-test/src/
-name-wrapper/=lib/name-wrapper/
-hardhat/=lib/forge-std/src/
-forge-ens/=lib/forge-ens/src/

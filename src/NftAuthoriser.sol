@@ -52,6 +52,7 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     }
 
     /// @notice Make sure label is at least four characters long, emojis supported
+    /// @param node Unused in this implementation
     /// @inheritdoc IRulesEngine
     function isLabelValid(bytes32 node, string memory label)
         external

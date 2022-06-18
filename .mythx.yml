@@ -3,7 +3,6 @@ format: json
 
 analyze:
   mode: quick
-  group-name: "me3 protocol"
   solc: 0.8.10
   remappings:
     - "forge-std/=lib/forge-std/src/"
