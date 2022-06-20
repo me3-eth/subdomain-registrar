@@ -8,10 +8,12 @@ Glossary:
 
 ## Deployments
 
-* Registrar: `0x9f2daf90c4323b529c31a40520a5fa63eb601b84` on:
+* Registrar: `0x9fef5b1868de0c511121a3c354c28e2b741eb101` on:
   * Rinkeby
-* NftAuthoriser: `0x0c24293b6d874e830789ed0948bed9935d4a4fdb` on:
-  * Rinkeby
+  * Goerli
+* NftAuthoriser using `WorstNftEver` as the backend:
+  * Rinkeby: `0xb4657a293edd026d7bbe343cd47d00f62ef0e311`
+  * Goerli: `0xd370ac13f4b084a40b0d65338a8ba52ef5921955`
 
 ## Project Controls
 

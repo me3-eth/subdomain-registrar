@@ -9,10 +9,9 @@ import "ens-contracts/registry/ENS.sol";
 contract DeployRegistrar is Script {
   address constant ensRegistry = 0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e;
 
-  // TODO would be nice to pass this in, this is a rinkeby address
-  address immutable fallbackResolver = 0xf6305c19e814d2a75429Fd637d01F7ee0E77d615;
+  function run(address fallbackResolver) external {
+    require(fallbackResolver != address(0x0), "Resolver must be set");
 
-  function run() external {
     vm.startBroadcast();
 
     // Deploy Registrar
