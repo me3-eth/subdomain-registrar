@@ -2,46 +2,38 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Overview
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Dive deep into the me3 Protocol and add identity to your community.
 
-## Getting Started
+## The Stack
 
-Get started by **creating a new site**.
+The me3 Protocol is made up of three core parts:
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+* the smart contracts for subdomain registration and authorisation
+* the embedable claim widget for your website
+* the dapp to showcase user profiles
 
-### What you'll need
+### Smart Contracts
 
-- [Node.js](https://nodejs.org/en/download/) version 14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Our contract documentation is under the **Contracts** menu on the left. The main contract is `Registrar.sol` and this one should be made a controller on your ENS name to work correctly.
 
-## Generate a new site
+### Embedable Claim Widget
 
-Generate a new Docusaurus site using the **classic template**.
+Our claim widget is available at https://github.com/me3-eth/claim-widget along with usage examples for React, Vue, and Svelte.
 
-The classic template will automatically be added to your project after you run the command:
+### Dapp
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+Our dapp is hosted on IPFS and uses ENS for routing to the contenthash. We also have a centralized gateway for accessing the site.
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+Access the site:
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+* https://me3.eth.limo
+* https://me3.eth.link
+* https://me3.eth (if you have Metamask or Status)
+* https://app.me3.is
 
-## Start your site
+Check out the creators profiles:
 
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+* https://me3.eth.limo/#/charchar.eth
+* https://me3.is/brendan.me3.eth

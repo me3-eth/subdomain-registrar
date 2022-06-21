@@ -12,7 +12,7 @@
     "serve": "docusaurus serve --no-open",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "gen-contracts": "scripts/docgen/bin.js"
+    "gen-contracts": "rm -rf docs/contracts/*.md && scripts/docgen/bin.js"
   },
   "dependencies": {
     "@docusaurus/core": "2.0.0-beta.21",
