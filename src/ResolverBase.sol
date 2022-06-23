@@ -2,13 +2,17 @@
 pragma solidity 0.8.10;
 
 abstract contract ResolverBase {
-  function isAuthorised(bytes32 node) internal virtual view returns(bool);
+  function isAuthorised(bytes32 node, bytes32 project) internal virtual view returns(bool);
 
-  modifier authorised (bytes32 node) {
-    // TODO get the project node, get authorisers from registrar, check if user can edit
+  // TODO needs work
+  modifier authorised (bytes32 node, bytes32 project) {
+    require(isAuthorised(node, project), "User is not authorised");
     _;
   }
 
+  /// @dev Interface support checking following ERC-165
+  /// @param interfaceId the interface to check is supported
+  /// @return True if interface is supported, false otherwise
   function supportsInterface(bytes4 interfaceId) public virtual view returns (bool) {
     return interfaceId == 0x01ffc9a7;
   }
