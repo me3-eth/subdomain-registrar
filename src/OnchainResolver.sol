@@ -7,29 +7,43 @@ import {TextResolver} from "./TextResolver.sol";
 import {AddressResolver} from "./AddressResolver.sol";
 import {IAuthoriser} from "./IAuthoriser.sol";
 
-// TODO add ownable, IMulticall, IProjectResolver
+// TODO add IMulticall
 
 /// @title On-chain ENS Resolver
 /// @author charchar.eth
 /// @notice Provides the methods that me3 supports with authorisation dependent on project
 /// @dev ERC-165 support for read and write functions
 contract OnchainResolver is Owned(msg.sender), AddressResolver, TextResolver {
-  bytes32 immutable projectNode;
+    bytes32 immutable projectNode;
 
-  IAuthoriser public authoriser;
+    IAuthoriser public authoriser;
 
-  constructor (bytes32 node) {
-    projectNode = node;
-    authoriser = IAuthoriser(address(0x0));
-  }
+    constructor (bytes32 node) {
+        projectNode = node;
+        authoriser = IAuthoriser(address(0x0));
+    }
 
-  function isAuthorised() internal override view returns(bool) {
-    require(address(authoriser) != address(0x0), "Authoriser contract has not been set");
+    function isAuthorised()
+        internal
+        view
+        override
+        returns (bool)
+    {
+        require(
+            address(authoriser) != address(0x0),
+            "Authoriser contract has not been set"
+        );
 
-    return authoriser.canEdit(projectNode, msg.sender, new bytes());
-  }
+        return authoriser.canEdit(projectNode, msg.sender, new bytes(0));
+    }
 
-  function supportsInterface(bytes4 interfaceId) public virtual override(AddressResolver, TextResolver) view returns (bool) {
-    return super.supportsInterface(interfaceId);
-  }
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AddressResolver, TextResolver)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 }

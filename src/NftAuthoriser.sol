@@ -106,8 +106,8 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     }
 
     function supportsInterface(bytes4 interfaceId) public view returns (bool) {
-      return interfaceId == type(IAuthoriser).interfaceId
+        return interfaceId == type(IAuthoriser).interfaceId
         || interfaceId == type(IRulesEngine).interfaceId
-        || interfaceId == 0x01ffc9a7; // ERC-165
+        || interfaceId == 0x01ffc9a7;
     }
 }

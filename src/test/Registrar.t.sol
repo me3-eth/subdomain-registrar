@@ -112,14 +112,14 @@ contract RegistrarTest is EnsSetup {
     }
 
     function testCannotSendEthToContract() public {
-      address payable payableRegistrar = payable(address(registrar));
-      (bool success,) = payableRegistrar.call{value: 1 ether}("");
-      assertEq(success, false);
+        address payable payableRegistrar = payable(address(registrar));
+        (bool success,) = payableRegistrar.call{value: 1 ether}("");
+        assertEq(success, false);
     }
 
     function testFallbackReverts() public {
-      (bool success,) = address(registrar).call(abi.encodeWithSignature("thisisntreal()"));
-      assertEq(success, false);
+        (bool success,) = address(registrar).call(abi.encodeWithSignature("thisisntreal()"));
+        assertEq(success, false);
     }
 
     function testRegisterSubdomain() public {

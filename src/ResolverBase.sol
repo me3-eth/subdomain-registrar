@@ -2,18 +2,26 @@
 pragma solidity 0.8.10;
 
 abstract contract ResolverBase {
-  function isAuthorised() internal virtual view returns(bool);
+    function isAuthorised()
+        internal
+        view
+        virtual
+        returns (bool);
 
-  // TODO needs work
-  modifier authorised () {
-    require(isAuthorised(), "User is not authorised");
-    _;
-  }
+    modifier authorised() {
+        require(isAuthorised(), "User is not authorised");
+        _;
+    }
 
-  /// @dev Interface support checking following ERC-165
-  /// @param interfaceId the interface to check is supported
-  /// @return True if interface is supported, false otherwise
-  function supportsInterface(bytes4 interfaceId) public virtual view returns (bool) {
-    return interfaceId == 0x01ffc9a7;
-  }
+    /// @dev Interface support checking following ERC-165
+    /// @param interfaceId the interface to check is supported
+    /// @return True if interface is supported, false otherwise
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        returns (bool)
+    {
+        return interfaceId == 0x01ffc9a7;
+    }
 }
