@@ -10,13 +10,54 @@ contract OnchainResolverTest is Test {
     OnchainResolver public resolver;
     bytes32 public ethNode = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
 
+    event AddrChanged(bytes32 indexed node, address addr);
+    event AddressChanged(bytes32 indexed node, uint256 coinType, bytes addr);
+    event TextChanged(bytes32 indexed node, string indexed key);
+
     function setUp() public {
         resolver = new OnchainResolver(ethNode);
+    }
+
+    function testAddr() public {
+        bytes32 node = keccak256(abi.encode("someone"));
+
+        vm.expectEmit(true, true, true, true);
+        emit AddrChanged(node, address(this));
+
+        resolver.setAddr(node, address(this));
+        assertEq(payable(address(this)), resolver.addr(node));
+    }
+
+    function testAddress() public {
+        bytes32 node = keccak256(abi.encode("someone"));
+        address resolverAddr = address(resolver);
+        bytes memory encoded = new bytes(20);
+        assembly {
+            mstore(add(encoded, 32), mul(resolverAddr, exp(256, 12)))
+        }
+
+        vm.expectEmit(true, true, true, true);
+        emit AddressChanged(node, 60, encoded);
+
+        resolver.setAddr(node, 60, encoded);
+        assertEq(encoded, resolver.addr(node, 60));
+    }
+
+    function testText(string memory key, string memory value) public {
+        bytes32 node = keccak256(abi.encode("someone"));
+
+        vm.expectEmit(true, true, true, true);
+        emit TextChanged(node, key);
+
+        resolver.setText(node, key, value);
+        assertEq(value, resolver.text(node, key));
     }
 
     function testSupportsTextReadAndWrite() public {
         ITextRead readInterface;
         assertTrue(resolver.supportsInterface(readInterface.text.selector));
+        bytes4 ensTextResolver = 0x59d1d43c;
+        assertTrue(type(ITextRead).interfaceId == ensTextResolver);
 
         ITextWrite writeInterface;
         assertTrue(resolver.supportsInterface(writeInterface.setText.selector));
@@ -25,18 +66,11 @@ contract OnchainResolverTest is Test {
     function testSupportsAddrCoinTypeRead() public {
         IAddrRead addrRead;
         assertTrue(resolver.supportsInterface(addrRead.addr.selector));
-
-        ICoinAddrRead coinRead;
-        assertTrue(resolver.supportsInterface(coinRead.addr.selector));
-    }
-
-    function testReadsMatchENS() public {
-        bytes4 ensTextResolver = 0x59d1d43c;
-        assertTrue(type(ITextRead).interfaceId == ensTextResolver);
-
         bytes4 ensAddrResolver = 0x3b3b57de;
         assertTrue(type(IAddrRead).interfaceId == ensAddrResolver);
 
+        ICoinAddrRead coinRead;
+        assertTrue(resolver.supportsInterface(coinRead.addr.selector));
         bytes4 ensAddressResolver = 0xf1cb7e06;
         assertTrue(type(ICoinAddrRead).interfaceId == ensAddressResolver);
     }
