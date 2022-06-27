@@ -2,11 +2,11 @@
 pragma solidity 0.8.10;
 
 abstract contract ResolverBase {
-  function isAuthorised(bytes32 node, bytes32 project) internal virtual view returns(bool);
+  function isAuthorised() internal virtual view returns(bool);
 
   // TODO needs work
-  modifier authorised (bytes32 node, bytes32 project) {
-    require(isAuthorised(node, project), "User is not authorised");
+  modifier authorised () {
+    require(isAuthorised(), "User is not authorised");
     _;
   }
 

@@ -13,7 +13,7 @@ abstract contract TextResolver is ITextRead, ITextWrite, ResolverBase {
   }
 
   /// @inheritdoc ITextWrite
-  function setText(bytes32 node, string calldata key, string calldata value) virtual external authorised(node, node) {
+  function setText(bytes32 node, string calldata key, string calldata value) virtual external authorised {
     emit TextChanged(node, key);
     nodeText[node][key] = value;
   }
