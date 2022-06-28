@@ -105,6 +105,13 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
         return address(0x0);
     }
 
+    /// @notice Change the default resolver used at registration
+    /// @param _resolver Address of the new resolver
+    /// @dev 0x0 is a valid resolver address
+    function setResolver (address _resolver) external onlyOwner {
+        resolver = _resolver;
+    }
+
     function supportsInterface(bytes4 interfaceId) public view returns (bool) {
         return interfaceId == type(IAuthoriser).interfaceId
         || interfaceId == type(IRulesEngine).interfaceId

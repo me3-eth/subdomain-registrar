@@ -18,9 +18,9 @@ contract OnchainResolver is Owned(msg.sender), AddressResolver, TextResolver {
 
     IAuthoriser public authoriser;
 
-    constructor (bytes32 node) {
+    constructor (bytes32 node, IAuthoriser _authoriser) {
         projectNode = node;
-        authoriser = IAuthoriser(address(0x0));
+        authoriser = _authoriser;
     }
 
     function isAuthorised()
