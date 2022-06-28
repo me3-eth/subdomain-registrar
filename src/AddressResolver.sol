@@ -31,7 +31,7 @@ abstract contract AddressResolver is IAddrRead, IAddressWrite, ICoinAddrRead, Re
     }
 
     /// @inheritdoc IAddressWrite
-    function setAddr(bytes32 node, address _addr) public virtual {
+    function setAddr(bytes32 node, address _addr) public virtual authorised(node) {
         emit AddrChanged(node, _addr);
 
         bytes memory encoded = addressToBytes(_addr);
@@ -39,7 +39,7 @@ abstract contract AddressResolver is IAddrRead, IAddressWrite, ICoinAddrRead, Re
     }
 
     /// @inheritdoc IAddressWrite
-    function setAddr(bytes32 node, uint256 coinType, bytes memory encodedAddress) public virtual {
+    function setAddr(bytes32 node, uint256 coinType, bytes memory encodedAddress) public virtual authorised(node) {
         emit AddressChanged(node, coinType, encodedAddress);
 
         addresses[node][coinType] = encodedAddress;

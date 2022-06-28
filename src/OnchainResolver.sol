@@ -23,7 +23,7 @@ contract OnchainResolver is Owned(msg.sender), AddressResolver, TextResolver {
         authoriser = _authoriser;
     }
 
-    function isAuthorised()
+    function isAuthorised(bytes32 /*node*/)
         internal
         view
         override

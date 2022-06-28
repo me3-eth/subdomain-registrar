@@ -5,6 +5,25 @@ import {Test} from "forge-std/Test.sol";
 import {OnchainResolver} from "../OnchainResolver.sol";
 import {ITextRead, ITextWrite} from "../ITextResolver.sol";
 import {IAddrRead, IAddressWrite, ICoinAddrRead} from "../IAddressResolver.sol";
+import {IAuthoriser} from "../IAuthoriser.sol";
+
+contract Authoriser is IAuthoriser {
+    function canRegister(
+        bytes32 node,
+        address sender,
+        bytes memory blob
+    ) public view virtual returns (bool) {
+        return true;
+    }
+
+    function canEdit(
+        bytes32 node,
+        address sender,
+        bytes memory blob
+    ) public view virtual returns (bool) {
+        return true;
+    }
+}
 
 contract OnchainResolverTest is Test {
     OnchainResolver public resolver;
@@ -15,7 +34,8 @@ contract OnchainResolverTest is Test {
     event TextChanged(bytes32 indexed node, string indexed key);
 
     function setUp() public {
-        resolver = new OnchainResolver(ethNode);
+        IAuthoriser auth = new Authoriser();
+        resolver = new OnchainResolver(ethNode, auth);
     }
 
     function testAddr() public {
