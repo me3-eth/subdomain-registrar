@@ -5,6 +5,7 @@ import {Owned} from "solmate/auth/Owned.sol";
 
 import {TextResolver} from "./TextResolver.sol";
 import {AddressResolver} from "./AddressResolver.sol";
+import {NameResolver} from "./NameResolver.sol";
 import {IAuthoriser} from "./IAuthoriser.sol";
 
 // TODO add IMulticall
@@ -13,7 +14,7 @@ import {IAuthoriser} from "./IAuthoriser.sol";
 /// @author charchar.eth
 /// @notice Provides the methods that me3 supports with authorisation dependent on project
 /// @dev ERC-165 support for read and write functions
-contract OnchainResolver is Owned(msg.sender), AddressResolver, TextResolver {
+contract OnchainResolver is Owned(msg.sender), AddressResolver, NameResolver, TextResolver {
     bytes32 immutable projectNode;
 
     IAuthoriser public authoriser;
@@ -41,7 +42,7 @@ contract OnchainResolver is Owned(msg.sender), AddressResolver, TextResolver {
         public
         view
         virtual
-        override(AddressResolver, TextResolver)
+        override(AddressResolver, NameResolver, TextResolver)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

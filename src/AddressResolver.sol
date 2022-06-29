@@ -55,7 +55,7 @@ abstract contract AddressResolver is IAddrRead, IAddressWrite, ICoinAddrRead, Re
     {
         return interfaceId == type(IAddrRead).interfaceId
           || interfaceId == type(ICoinAddrRead).interfaceId
-          // || interfaceId == type(IAddressWrite).interfaceId
+          || interfaceId == type(IAddressWrite).interfaceId
           || super.supportsInterface(interfaceId);
     }
 

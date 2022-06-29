@@ -20,4 +20,17 @@ abstract contract NameResolver is INameRead, INameWrite, ResolverBase {
       emit NameChanged(node, name);
       nodeName[node] = name;
     }
+
+    /// @inheritdoc ResolverBase
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return interfaceId == type(INameRead).interfaceId
+      || interfaceId == type(INameWrite).interfaceId
+      || super.supportsInterface(interfaceId);
+    }
 }
