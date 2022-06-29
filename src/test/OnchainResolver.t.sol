@@ -32,10 +32,21 @@ contract OnchainResolverTest is Test {
     event AddrChanged(bytes32 indexed node, address addr);
     event AddressChanged(bytes32 indexed node, uint256 coinType, bytes addr);
     event TextChanged(bytes32 indexed node, string indexed key);
+    event NameChanged(bytes32 indexed node, string name);
 
     function setUp() public {
         IAuthoriser auth = new Authoriser();
         resolver = new OnchainResolver(ethNode, auth);
+    }
+
+    function testName() public {
+        bytes32 node = keccak256(abi.encode("someone"));
+
+        vm.expectEmit(true, true, true, true);
+        emit NameChanged(node, "jimmy");
+
+        resolver.setName(node, "jimmy");
+        assertEq("jimmy", resolver.name(node));
     }
 
     function testAddr() public {

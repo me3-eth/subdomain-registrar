@@ -7,9 +7,6 @@ import {INameRead, INameWrite} from "./INameResolver.sol";
 abstract contract NameResolver is INameRead, INameWrite, ResolverBase {
     mapping(bytes32 => string) private nodeName;
 
-    /// @inheritdoc INameWrite
-    event NameChanged(bytes32 indexed node, string memory name);
-
     /// @inheritdoc INameRead
     function name(bytes32 node) external view returns (string memory) {
         return nodeName[node];

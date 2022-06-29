@@ -11,7 +11,7 @@ interface INameWrite {
     /// @notice Should be emitted whenever the name changes
     /// @param node Associated node
     /// @param name The new name
-    event NameChanged(bytes32 indexed node, string memory name);
+    event NameChanged(bytes32 indexed node, string name);
 
     /// @notice Set the name of the associated node
     /// @param node Associated node
