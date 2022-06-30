@@ -7,14 +7,13 @@ import {TextResolver} from "./TextResolver.sol";
 import {AddressResolver} from "./AddressResolver.sol";
 import {NameResolver} from "./NameResolver.sol";
 import {IAuthoriser} from "./IAuthoriser.sol";
-
-// TODO add IMulticall
+import {IMulticall} from "./IMulticall.sol";
 
 /// @title On-chain ENS Resolver
 /// @author charchar.eth
 /// @notice Provides the methods that me3 supports with authorisation dependent on project
 /// @dev ERC-165 support for read and write functions
-contract OnchainResolver is Owned(msg.sender), AddressResolver, NameResolver, TextResolver {
+contract OnchainResolver is IMulticall, Owned(msg.sender), AddressResolver, NameResolver, TextResolver {
     bytes32 immutable projectNode;
 
     IAuthoriser public authoriser;
@@ -38,6 +37,17 @@ contract OnchainResolver is Owned(msg.sender), AddressResolver, NameResolver, Te
         return authoriser.canEdit(projectNode, msg.sender, new bytes(0));
     }
 
+    function multicall (bytes[] calldata fns) external returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](fns.length);
+
+        for (uint i = 0; i < fns.length; i++) {
+            (bool success, bytes memory result) = address(this).delegatecall(fns[i]);
+            results[i] = result;
+        }
+
+        return results;
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -45,6 +55,6 @@ contract OnchainResolver is Owned(msg.sender), AddressResolver, NameResolver, Te
         override(AddressResolver, NameResolver, TextResolver)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IMulticall).interfaceId || super.supportsInterface(interfaceId);
     }
 }

@@ -39,6 +39,34 @@ contract OnchainResolverTest is Test {
         resolver = new OnchainResolver(ethNode, auth);
     }
 
+    function testMulticall(string memory key, string memory value) public {
+        bytes32 node = keccak256(abi.encode("someone"));
+        // Call the text functions through multicall
+        bytes memory setTextEnc = abi.encodeWithSignature("setText(bytes32,string,string)", node, key, value);
+        bytes memory textEnc = abi.encodeWithSignature("text(bytes32,string)", node, key);
+
+        bytes[] memory fns = new bytes[](2);
+        fns[0] = setTextEnc;
+        fns[1] = textEnc;
+
+        bytes[] memory results = resolver.multicall(fns);
+        assertEq(abi.decode(results[1], (string)), value);
+    }
+
+    function testCannotMulticall(string memory key, string memory value) public {
+        bytes32 node = keccak256(abi.encode("someone"));
+        // Call the text functions through multicall
+        bytes memory setTextEnc = abi.encodeWithSignature("setText(bytes32,string,string)", node, "", value);
+        bytes memory textEnc = abi.encodeWithSignature("text(bytes32,string)", node, key);
+
+        bytes[] memory fns = new bytes[](2);
+        fns[0] = setTextEnc;
+        fns[1] = textEnc;
+
+        bytes[] memory results = resolver.multicall(fns);
+        assertTrue(keccak256(results[1]) != keccak256(abi.encodePacked(value)));
+    }
+
     function testName() public {
         bytes32 node = keccak256(abi.encode("someone"));
 
