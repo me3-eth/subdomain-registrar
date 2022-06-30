@@ -10,6 +10,7 @@ contract DeployNftAuthoriser is Script {
     function run (address nftContract, bytes32 node, address registrar) external {
         require(nftContract != address(0x0), "NFT contract must be a real contract");
         require(registrar != address(0x0), "Registrar contract must be a real contract");
+        require(node != keccak256(abi.encodePacked("")), "Node must be set");
 
         vm.startBroadcast();
         NftAuthoriser combo = new NftAuthoriser(nftContract, address(0x0));
