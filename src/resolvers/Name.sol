@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.10;
 
-import {ResolverBase} from "./ResolverBase.sol";
+import {ResolverBase} from "./Base.sol";
 import {INameRead, INameWrite} from "./INameResolver.sol";
 
 abstract contract NameResolver is INameRead, INameWrite, ResolverBase {

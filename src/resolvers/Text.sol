@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.10;
 
-import {ResolverBase} from "./ResolverBase.sol";
+import {ResolverBase} from "./Base.sol";
 import {ITextRead, ITextWrite} from "./ITextResolver.sol";
 
 abstract contract TextResolver is ITextRead, ITextWrite, ResolverBase {

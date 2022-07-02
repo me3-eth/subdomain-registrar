@@ -3,8 +3,8 @@ pragma solidity 0.8.10;
 
 import {Test} from "forge-std/Test.sol";
 import {OnchainResolver} from "../OnchainResolver.sol";
-import {ITextRead, ITextWrite} from "../ITextResolver.sol";
-import {IAddrRead, IAddressWrite, ICoinAddrRead} from "../IAddressResolver.sol";
+import {ITextRead, ITextWrite} from "../resolvers/ITextResolver.sol";
+import {IAddrRead, IAddressWrite, ICoinAddrRead} from "../resolvers/IAddressResolver.sol";
 import {IAuthoriser} from "../IAuthoriser.sol";
 
 contract Authoriser is IAuthoriser {

@@ -3,9 +3,9 @@ pragma solidity 0.8.10;
 
 import {Owned} from "solmate/auth/Owned.sol";
 
-import {TextResolver} from "./TextResolver.sol";
-import {AddressResolver} from "./AddressResolver.sol";
-import {NameResolver} from "./NameResolver.sol";
+import {TextResolver} from "./resolvers/Text.sol";
+import {AddressResolver} from "./resolvers/Address.sol";
+import {NameResolver} from "./resolvers/Name.sol";
 import {IAuthoriser} from "./IAuthoriser.sol";
 import {IMulticall} from "./IMulticall.sol";
 
