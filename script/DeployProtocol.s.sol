@@ -16,8 +16,7 @@ contract DeployRegistrar is Script {
 
     // Deploy Registrar
     Registrar registrar = new Registrar(
-      ENS(ensRegistry),
-      fallbackResolver
+      ENS(ensRegistry)
     );
 
     vm.stopBroadcast();

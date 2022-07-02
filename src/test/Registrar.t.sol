@@ -41,28 +41,6 @@ contract RulesEngine is IRulesEngine {
         string memory label,
         address registrant
     ) external view returns (address) {
-        return address(0x0);
-    }
-}
-
-contract RulesEngineWithOwnResolver is IRulesEngine {
-    function isLabelValid(bytes32 node, string memory label)
-        external
-        view
-        returns (bool)
-    {
-        return true;
-    }
-
-    function subnodeOwner(address registrant) external view returns (address) {
-        return registrant;
-    }
-
-    function profileResolver(
-        bytes32 node,
-        string memory label,
-        address registrant
-    ) external view returns (address) {
         return address(0xabc123);
     }
 }
@@ -88,7 +66,7 @@ contract RegistrarTest is EnsSetup {
     function setUp() public override {
         super.setUp();
 
-        registrar = new Registrar(_ens, address(_defaultResolver));
+        registrar = new Registrar(_ens);
         _ens.setApprovalForAll(address(registrar), true);
     }
 
@@ -146,38 +124,6 @@ contract RegistrarTest is EnsSetup {
 
         vm.expectRevert(bytes("Label must be available to register"));
         registrar.register(demoNode, "frens", blob);
-    }
-
-    function testRulesHasOwnResolverAtRegistration() public {
-        IAuthoriser authoriser = new Authoriser();
-        IRulesEngine rules = new RulesEngineWithOwnResolver();
-        registrar.setProjectNode(demoNode, authoriser, rules, true);
-
-        address expectedResolver = address(0xabc123);
-
-        assertTrue(registrar.fallbackResolver() != expectedResolver);
-
-        registrar.register(demoNode, "person", abi.encode(uint256(1)));
-
-        assertEq(_ens.resolver(namehash(demoNode, labelhash("person"))), expectedResolver);
-    }
-
-    function testChangeFallbackResolver(address newResolver) public {
-        vm.assume(newResolver != address(0x0));
-
-        _setUpNode();
-        vm.expectEmit(true, false, false, false);
-        emit FallbackResolverUpdated(newResolver);
-
-        registrar.changeFallbackResolver(newResolver);
-        assertEq(registrar.fallbackResolver(), newResolver);
-    }
-
-    function testCannotChangeResolverToZero() public {
-        _setUpNode();
-
-        vm.expectRevert(bytes("Resolver must be a real contract"));
-        registrar.changeFallbackResolver(address(0x0));
     }
 
     function testChangeNodeState() public {

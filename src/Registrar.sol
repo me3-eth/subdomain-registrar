@@ -51,9 +51,6 @@ interface IRegistrar {
 contract Registrar is IRegistrar, Owned(msg.sender) {
     ENS private ens;
 
-    /// @notice Address of the default resolver used when registering a subdomain
-    address public fallbackResolver;
-
     /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
 
@@ -107,9 +104,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         _;
     }
 
-    constructor(ENS _registry, address _resolver) {
+    constructor(ENS _registry) {
         ens = _registry;
-        fallbackResolver = _resolver;
     }
 
     /// @notice Add a new project to the directory
@@ -130,15 +126,6 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         nodeEnabled[node] = enable;
     }
 
-    /// @notice Change the default resolver to a new contract
-    /// @param newResolver Address of the new resolver contract
-    function changeFallbackResolver(address newResolver) external onlyOwner {
-        require(newResolver != address(0x0), "Resolver must be a real contract");
-
-        fallbackResolver = newResolver;
-        emit FallbackResolverUpdated(newResolver);
-    }
-
     /// @inheritdoc IRegistrar
     function register(
         bytes32 node,
@@ -151,9 +138,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         bytes32 hashedLabel = Utilities.labelhash(label);
         address owner = nodeRules[node].subnodeOwner(msg.sender);
         address resolver = nodeRules[node].profileResolver(node, label, msg.sender);
-        if (resolver == address(0x0)) {
-          resolver = fallbackResolver;
-        }
+        require(resolver != address(0x0), "Resolver must be set by project");
 
         emit SubnodeRegistered(node, hashedLabel, owner, msg.sender);
         ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
