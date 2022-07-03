@@ -49,7 +49,7 @@ interface IRegistrar {
 /// @notice Provides third-party projects with a common subdomain registration function
 /// @dev 0.1.0
 contract Registrar is IRegistrar, Owned(msg.sender) {
-    ENS private ens;
+    ENS public ens;
 
     /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
@@ -59,10 +59,6 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice Lookup rules contract by project node
     mapping(bytes32 => IRulesEngine) public nodeRules;
-
-    /// @notice The default resolver has changed
-    /// @param resolverAddr The new address of the resolver
-    event FallbackResolverUpdated(address indexed resolverAddr);
 
     /// @notice A project has been enabled/disabled
     /// @param node The fully qualified, namehashed ENS name for the project

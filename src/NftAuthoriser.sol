@@ -23,11 +23,10 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     IERC721 public nft;
 
     /// @notice The current profile resolver
-    address resolver;
+    address private resolver;
 
-    constructor(address _nft, address _resolver) {
+    constructor(address _nft) {
         nft = IERC721(_nft);
-        resolver = _resolver;
     }
 
     /// @inheritdoc IAuthoriser
@@ -102,7 +101,7 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
         string memory label,
         address registrant
     ) external view returns (address) {
-        return address(0x0);
+        return resolver;
     }
 
     /// @notice Change the default resolver used at registration

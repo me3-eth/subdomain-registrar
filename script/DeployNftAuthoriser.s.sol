@@ -13,7 +13,7 @@ contract DeployNftAuthoriser is Script {
         require(node != keccak256(abi.encodePacked("")), "Node must be set");
 
         vm.startBroadcast();
-        NftAuthoriser combo = new NftAuthoriser(nftContract, address(0x0));
+        NftAuthoriser combo = new NftAuthoriser(nftContract);
 
         OnchainResolver resolver = new OnchainResolver(node, combo);
 
