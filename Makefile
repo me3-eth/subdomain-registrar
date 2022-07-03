@@ -13,9 +13,9 @@ deploy-nftauthoriser-testnet: deploy-rinkeby-nftauthoriser deploy-goerli-nftauth
 # Does not work yet because there is no official ENS on Kovan
 #deploy-kovan:; forge create --rpc-url https://eth-kovan.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --private-key $(WALLET_PK) src/Renewal.sol:Renewal
 
-deploy-rinkeby-registrar:; forge create --rpc-url https://eth-rinkeby.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --chain rinkeby --nonce 0 --etherscan-api-key $(ETHERSCAN_API_KEY) --constructor-args "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" --constructor-args "0xf6305c19e814d2a75429Fd637d01F7ee0E77d615" --verify --private-key $(PROTOCOL_WALLET_PK) src/Registrar.sol:Registrar
+deploy-rinkeby-registrar:; forge create --rpc-url https://eth-rinkeby.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --chain rinkeby --nonce 5 --etherscan-api-key $(ETHERSCAN_API_KEY) --constructor-args "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" --constructor-args "0xf6305c19e814d2a75429Fd637d01F7ee0E77d615" --verify --private-key $(PROTOCOL_WALLET_PK) src/Registrar.sol:Registrar
 
-deploy-goerli-registrar:; forge create --rpc-url https://eth-goerli.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --chain goerli --nonce 0 --etherscan-api-key $(ETHERSCAN_API_KEY) --constructor-args "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" --constructor-args "0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329" --verify --private-key $(PROTOCOL_WALLET_PK) src/Registrar.sol:Registrar
+deploy-goerli-registrar:; forge create --rpc-url https://eth-goerli.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --chain goerli --nonce 5 --etherscan-api-key $(ETHERSCAN_API_KEY) --constructor-args "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" --constructor-args "0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329" --verify --private-key $(PROTOCOL_WALLET_PK) src/Registrar.sol:Registrar
 
 deploy-rinkeby-nftauthoriser:; forge create --rpc-url https://eth-rinkeby.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --chain rinkeby --etherscan-api-key $(ETHERSCAN_API_KEY) --constructor-args "0x7914a94a08e128a06cd68c8acf1d3e8dd84ca1c2" --constructor-args "0x0000000000000000000000000000000000000000" --verify --private-key $(NFTAUTH_WALLET_PK) src/NftAuthoriser.sol:NftAuthoriser
 
