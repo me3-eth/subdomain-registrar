@@ -53,7 +53,7 @@ contract OnchainResolverTest is Test {
         assertEq(abi.decode(results[1], (string)), value);
     }
 
-    function testCannotMulticall(string memory key, string memory value) public {
+    function testWrongResultMulticall(string memory key, string memory value) public {
         bytes32 node = keccak256(abi.encode("someone"));
         // Call the text functions through multicall
         bytes memory setTextEnc = abi.encodeWithSignature("setText(bytes32,string,string)", node, "", value);
@@ -65,6 +65,17 @@ contract OnchainResolverTest is Test {
 
         bytes[] memory results = resolver.multicall(fns);
         assertTrue(keccak256(results[1]) != keccak256(abi.encodePacked(value)));
+    }
+
+    function testMulticallUnsuccessful() public {
+        bytes32 node = keccak256(abi.encode("someone"));
+        bytes memory badFnEnc = abi.encodeWithSignature("textual(bytes32,string)", node, "key");
+
+        bytes[] memory fns = new bytes[](1);
+        fns[0] = badFnEnc;
+
+        bytes[] memory results = resolver.multicall(fns);
+        assertEq0(results[0], new bytes(0));
     }
 
     function testName() public {
