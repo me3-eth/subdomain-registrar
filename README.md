@@ -1,5 +1,7 @@
 # me3 Protocol
 
+[![MythXBadge](https://badgen.net/https/api.mythx.io/v1/projects/e7dc501c-5776-4785-92d3-46c571fd1c96/badge/data?cache=300&icon=https://raw.githubusercontent.com/ConsenSys/mythx-github-badge/main/logo_white.svg)](https://docs.mythx.io/dashboard/github-badges)
+
 Glossary:
 
 * **Project**: an NFT project, we track their ENS node in our smart contracts (eg: pcc.eth)
@@ -11,7 +13,7 @@ Glossary:
 * Registrar: `0x9fef5b1868de0c511121a3c354c28e2b741eb101` on:
   * Rinkeby
   * Goerli
-* NftAuthoriser using `WorstNftEver` as the backend:
+* Example NftAuthoriser using `WorstNftEver` as the backend:
   * Rinkeby: `0xb4657a293edd026d7bbe343cd47d00f62ef0e311`
   * Goerli: `0xd370ac13f4b084a40b0d65338a8ba52ef5921955`
 

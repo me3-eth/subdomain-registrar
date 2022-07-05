@@ -25,3 +25,5 @@ deploy-goerli-nftauthoriser:; forge create --rpc-url https://eth-goerli.alchemya
 script-deploy-registrar:; forge script --rpc-url https://eth-goerli.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --private-key $(NFTAUTH_WALLET_PK) -vvvv --sig "run(address)" script/DeployProtocol.s.sol "0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329"
 
 script-deploy-onboard:; forge script --rpc-url https://eth-goerli.alchemyapi.io/v2/$(TESTNET_RPC_KEY) --private-key $(NFTAUTH_WALLET_PK) -vvvv --broadcast --sig "run(address,bytes32,address)" script/DeployNftAuthoriser.s.sol 0x2be870ce516679332f7c1e58c7dd1c1663d1a046 0x138e2592a3674bb8b32cb6975df6d50a1607cf343df5cc1517342b0f86848124 0x9fef5b1868de0c511121a3c354c28e2b741eb101
+
+mythx-submit:; mythx --api-key $(MYTHX_API_KEY) analyze

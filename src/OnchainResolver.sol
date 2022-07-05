@@ -14,7 +14,7 @@ import {IMulticall} from "./IMulticall.sol";
 /// @notice Provides the methods that me3 supports with authorisation dependent on project
 /// @dev ERC-165 support for read and write functions
 contract OnchainResolver is IMulticall, Owned(msg.sender), AddressResolver, NameResolver, TextResolver {
-    bytes32 immutable projectNode;
+    bytes32 immutable public projectNode;
 
     IAuthoriser public authoriser;
 
