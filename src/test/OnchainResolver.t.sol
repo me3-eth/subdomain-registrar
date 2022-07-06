@@ -6,6 +6,7 @@ import {OnchainResolver} from "../OnchainResolver.sol";
 import {ITextRead, ITextWrite} from "../resolvers/ITextResolver.sol";
 import {IAddrRead, IAddressWrite, ICoinAddrRead} from "../resolvers/IAddressResolver.sol";
 import {IAuthoriser} from "../IAuthoriser.sol";
+import {IMulticall} from "../IMulticall.sol";
 
 contract Authoriser is IAuthoriser {
     function canRegister(
@@ -78,6 +79,15 @@ contract OnchainResolverTest is Test {
         assertEq0(results[0], new bytes(0));
     }
 
+    function testCannotMulticallNoFunctions() public {
+        bytes32 node = keccak256(abi.encode("someone"));
+
+        bytes[] memory fns = new bytes[](0);
+
+        vm.expectRevert(bytes("No functions were passed"));
+        bytes[] memory results = resolver.multicall(fns);
+    }
+
     function testName() public {
         bytes32 node = keccak256(abi.encode("someone"));
 
@@ -143,5 +153,9 @@ contract OnchainResolverTest is Test {
         assertTrue(resolver.supportsInterface(coinRead.addr.selector));
         bytes4 ensAddressResolver = 0xf1cb7e06;
         assertTrue(type(ICoinAddrRead).interfaceId == ensAddressResolver);
+    }
+
+    function testSupportsMulticall() public {
+        assertTrue(resolver.supportsInterface(IMulticall.multicall.selector));
     }
 }

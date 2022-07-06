@@ -38,6 +38,7 @@ contract OnchainResolver is IMulticall, Owned(msg.sender), AddressResolver, Name
     }
 
     function multicall (bytes[] calldata fns) external returns (bytes[] memory) {
+        require(fns.length > 0, "No functions were passed");
         bytes[] memory results = new bytes[](fns.length);
 
         for (uint i = 0; i < fns.length; i++) {
