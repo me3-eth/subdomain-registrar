@@ -29,6 +29,10 @@ contract RulesEngine is IRulesEngine {
         view
         returns (bool)
     {
+        string memory invalidLabel = "fail";
+        if (keccak256(abi.encode(label)) == keccak256(abi.encode(invalidLabel))) {
+            return false;
+        }
         return true;
     }
 
@@ -81,12 +85,25 @@ contract RegistrarTest is EnsSetup {
         assertTrue(registrar.nodeEnabled(demoNode));
     }
 
+    function testCannotRegisterWithInvalidLabel() public {
+        _setUpNode();
+        vm.expectRevert(bytes("Check with project for valid subdomain requirements"));
+        registrar.register(demoNode, "fail", bytes(""));
+    }
+
     function testValidLabelForNode() public {
         _setUpNode();
 
         bool validLabel = registrar.valid(demoNode, "banana");
 
         assertTrue(validLabel);
+    }
+
+    function testCannotSetupProjectAsNormalUser() public {
+        _setUpNode();
+        vm.expectRevert(bytes("UNAUTHORIZED"));
+        vm.prank(address(0xabc123));
+        registrar.setProjectNode(demoNode, IAuthoriser(address(0x0)), IRulesEngine(address(0x0)), true);
     }
 
     function testCannotSendEthToContract() public {
