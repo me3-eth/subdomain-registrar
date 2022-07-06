@@ -2,6 +2,8 @@ pragma solidity >=0.8.10 < 0.9.0;
 
 import "forge-std/Test.sol";
 import "../NftAuthoriser.sol";
+import "../IAuthoriser.sol";
+import "../IRulesEngine.sol";
 
 contract ERC721 {
     mapping(uint256 => address) public tokenOwner;
@@ -31,19 +33,20 @@ contract NftAuthoriserTest is Test {
         assertTrue(authoriser.canRegister(0x0, address(this), blob));
     }
 
-    function testCannotRegister() public {
+    function testAddressNotOwnerOfToken() public {
         bytes memory blob = abi.encode(uint256(6));
         assertTrue(authoriser.canRegister(0x0, address(this), blob) == false);
+    }
+
+    function testZeroTokenIdFails() public {
+        bytes memory authData = abi.encode(uint256(0));
+        vm.expectRevert(bytes("Token ID must be above 0"));
+        authoriser.canRegister(0x0, address(this), authData);
     }
 
     function testCanEdit() public {
         bytes memory blob = abi.encode(uint256(1));
         assertTrue(authoriser.canEdit(0x0, address(this), blob));
-    }
-
-    function testCannotEdit() public {
-        bytes memory blob = abi.encode(uint256(6));
-        assertTrue(authoriser.canEdit(0x0, address(this), blob) == false);
     }
 
     function testValidLabel() public {
@@ -60,11 +63,29 @@ contract NftAuthoriserTest is Test {
         assertTrue(authoriser.subnodeOwner(registrant) == registrant);
     }
 
-    function testProfileResolverIsAlwaysZero(
+    function testProfileResolverDefaultsToZero(
         bytes32 node,
         string memory label,
         address registrant
     ) public {
         assertTrue(authoriser.profileResolver(node, label, registrant) == address(0x0));
+    }
+
+    function testOwnerCanSetResolver(bytes32 node, address resolver) public {
+        authoriser.setResolver(resolver);
+        assertEq(authoriser.profileResolver(node, "", address(0x0)), resolver);
+    }
+
+    function testRandomCannotSetResolver(address user) public {
+        vm.expectRevert(bytes("UNAUTHORIZED"));
+        vm.prank(user);
+        authoriser.setResolver(address(0x0));
+    }
+
+    function testSupportedInterfaces(bytes4 badInterfaceId) public {
+        assertTrue(authoriser.supportsInterface(type(IAuthoriser).interfaceId));
+        assertTrue(authoriser.supportsInterface(type(IRulesEngine).interfaceId));
+        assertTrue(authoriser.supportsInterface(0x01ffc9a7));
+        assertEq(authoriser.supportsInterface(badInterfaceId), false);
     }
 }
