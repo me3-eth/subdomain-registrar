@@ -93,5 +93,5 @@ mv *.dot docs/callgraphs/
 **Generating checklist:**
 
 ```sh
-slither . --filter-paths "test|lib" --checklist > docs/slither-checklist.md
+slither . --filter-paths "test|lib" --checklist > old-docs/slither-checklist.md
 ```
