@@ -17,3 +17,6 @@
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/transmissions11/solmate
+[submodule "lib/forge-ens"]
+	path = lib/forge-ens
+	url = https://github.com/me3-eth/forge-ens

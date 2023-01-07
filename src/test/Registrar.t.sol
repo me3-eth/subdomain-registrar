@@ -3,7 +3,7 @@ pragma solidity 0.8.10;
 
 import "../Registrar.sol";
 import "../IAuthoriser.sol";
-import "./EnsSetup.sol";
+import { EnsSetup } from "forge-ens/EnsSetup.sol";
 
 contract Authoriser is IAuthoriser {
   function canRegister (bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
