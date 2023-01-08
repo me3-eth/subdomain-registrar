@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
-import "../Registrar.sol";
-import "../IAuthoriser.sol";
-import { Utilities } from "../Utils.sol";
 import { EnsSetup } from "forge-ens/EnsSetup.sol";
+import "../src/Registrar.sol";
+import "../src/IAuthoriser.sol";
 
 contract Authoriser is IAuthoriser {
   function canRegister (bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
@@ -56,7 +55,7 @@ contract RegistrarTest is EnsSetup {
   function testRegisterSubdomain () public {
     _setUpNode();
     vm.expectEmit(true, true, true, true);
-    emit NewOwner(demoNode, Utilities.namehash("banana"), address(this));
+    emit NewOwner(demoNode, labelhash("banana"), address(this));
 
     uint256 tokenId = 1;
     bytes[] memory blob = new bytes[](1);

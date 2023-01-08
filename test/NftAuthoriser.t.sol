@@ -2,7 +2,7 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
-import "../NftAuthoriser.sol";
+import "../src/NftAuthoriser.sol";
 
 contract ERC721 {
   mapping(uint256 => address) public tokenOwner;
