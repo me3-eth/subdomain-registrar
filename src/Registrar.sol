@@ -1,11 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
-import "ens-contracts/registry/ENS.sol";
 import { Owned } from  "solmate/auth/Owned.sol";
 
 import "./IAuthoriser.sol";
 import { Utilities } from "./Utils.sol";
+
+interface IENS {
+  event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
+
+  /// https://docs.ens.domains/contract-api-reference/ens#set-subdomain-record
+  function setSubnodeRecord(
+    bytes32 node,
+    bytes32 label,
+    address owner,
+    address resolver,
+    uint64 ttl
+  ) external virtual;
+}
 
 interface IRegistrar {
   function register (bytes32 node, string memory label, address owner, bytes[] memory additionalData) external;
@@ -20,7 +32,7 @@ interface IRegistrar {
 /// @notice Provides third-party projects with a common subdomain registration function
 /// @dev 0.1.0
 contract Registrar is IRegistrar, Owned(msg.sender) {
-  ENS private ens;
+  IENS private ens;
 
   address public me3Resolver;
   mapping(bytes32 => bool) public nodeEnabled;
@@ -42,7 +54,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     _;
   }
 
-  constructor (ENS _registry, address _resolver) {
+  constructor (IENS _registry, address _resolver) {
     ens = _registry;
     me3Resolver = _resolver;
   }
