@@ -27,7 +27,7 @@ interface IRegistrar {
   function addRootNode (bytes32 node, IAuthoriser authoriser, IRulesEngine rules) external;
 }
 
-/// @title Me3 Subdomain Registrar
+/// @title me3 Subdomain Registrar
 /// @author charchar.eth
 /// @notice Provides third-party projects with a common subdomain registration function
 /// @dev 0.1.0

@@ -1,0 +1,28 @@
+{
+  "name": "protocol",
+  "version": "0.0.0",
+  "description": "Glossary:",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "fmt": "solhint 'src/*.sol'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/me3-eth/protocol.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/me3-eth/protocol/issues"
+  },
+  "homepage": "https://github.com/me3-eth/protocol#readme",
+  "devDependencies": {
+    "solhint": "^3.3.7"
+  }
+}
