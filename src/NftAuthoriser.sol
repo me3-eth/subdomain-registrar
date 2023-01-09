@@ -25,20 +25,20 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     return nft.ownerOf(tokenId) == _user;
   }
 
-  function isLabelValid (string memory label) external view returns (bool isValid) {
+  function isLabelValid (string memory _label) external view returns (bool isValid) {
     uint256 maxLength = 3;
     uint256 len;
     uint256 i = 0;
-    uint256 bytelength = bytes(label).length;
+    uint256 byteLength = bytes(_label).length;
     isValid = false;
 
-    for(len = 0; i < bytelength; len++) {
+    for(len = 0; i < byteLength; len++) {
       if (len == maxLength) {
         isValid = true;
         break;
       }
 
-      bytes1 b = bytes(label)[i];
+      bytes1 b = bytes(_label)[i];
       if(b < 0x80) {
         i += 1;
       } else if (b < 0xE0) {

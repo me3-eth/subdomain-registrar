@@ -9,7 +9,7 @@
     "test": "test"
   },
   "scripts": {
-    "fmt": "solhint 'src/*.sol'",
+    "lint": "solhint 'src/**/*.sol'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
