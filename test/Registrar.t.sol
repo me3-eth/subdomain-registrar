@@ -1,103 +1,135 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
-import { EnsSetup } from "forge-ens/EnsSetup.sol";
+import {EnsSetup} from "forge-ens/EnsSetup.sol";
 import "../src/Registrar.sol";
 import "../src/IAuthoriser.sol";
 
 contract Authoriser is IAuthoriser {
-  function canRegister (bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
-    return true;
-  }
+    function canRegister(bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
+        return true;
+    }
 }
 
 contract RulesEngine is IRulesEngine {
-  function isLabelValid (string memory label) external view returns (bool) {
-    return true;
-  }
-
-  function fuses () external view returns (uint96) {
-    return 0;
-  }
+    function isLabelValid(string memory label) external view returns (bool) {
+        return true;
+    }
 }
 
 contract RegistrarTest is EnsSetup {
-  Registrar public registrar;
+    Registrar public registrar;
 
-  event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
-  event ProjectStateChanged (bytes32 indexed node, bool enabled);
+    event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
+    event SubnodeRegistered(bytes32 indexed node, bytes32 indexed label, address owner, address registrant);
+    event ProjectStateChanged(bytes32 indexed node, address authoriser, address rules, bool enabled);
 
-  function setUp() override public {
-    super.setUp();
+    function setUp() public override {
+        super.setUp();
 
-    registrar = new Registrar(IENS(address(_ens)), address(0x0));
-    _ens.setApprovalForAll(address(registrar), true);
-  }
+        registrar = new Registrar(IENS(address(_ens)));
+        _ens.setApprovalForAll(address(registrar), true);
+    }
 
-  function testAddRootNode () public {
-    IAuthoriser authoriser = new Authoriser();
-    IRulesEngine rules = new RulesEngine();
+    function testSetProjectNode() public {
+        IAuthoriser authoriser = new Authoriser();
+        IRulesEngine rules = new RulesEngine();
 
-    registrar.addRootNode(demoNode, authoriser, rules);
+        registrar.setProjectNode(demoNode, authoriser, rules, true);
 
-    assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
-    assertEq(address(registrar.nodeRules(demoNode)), address(rules));
-  }
+        assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
+        assertEq(address(registrar.nodeRules(demoNode)), address(rules));
+        assertEq(registrar.nodeEnabled(demoNode), true);
 
-  function testValidLabelForNode () public {
-    _setUpNode();
+        registrar.setProjectNode(demoNode, authoriser, rules, false);
 
-    bool validLabel = registrar.valid(demoNode, "banana");
+        assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
+        assertEq(address(registrar.nodeRules(demoNode)), address(rules));
+        assertEq(registrar.nodeEnabled(demoNode), false);
+    }
 
-    assertTrue(validLabel);
-  }
+    function testValidLabelForNode() public {
+        _setUpNode();
 
-  function testRegisterSubdomain () public {
-    _setUpNode();
-    vm.expectEmit(true, true, true, true);
-    emit NewOwner(demoNode, labelhash("banana"), address(this));
+        bool validLabel = registrar.valid(demoNode, "banana");
 
-    uint256 tokenId = 1;
-    bytes[] memory blob = new bytes[](1);
-    blob[0] = abi.encodePacked(tokenId); // encode tokenId
+        assertTrue(validLabel);
+    }
 
-    registrar.register(demoNode, "banana", address(this), blob);
-  }
+    function testRegisterSubdomain() public {
+        _setUpNode();
+        vm.expectEmit(true, true, true, true);
+        emit NewOwner(demoNode, labelhash("banana"), address(this));
 
-  function testChangeNodeState () public {
-    _setUpNode();
-    assertTrue(registrar.nodeEnabled(demoNode));
+        uint256 tokenId = 1;
+        bytes[] memory blob = new bytes[](1);
+        blob[0] = abi.encodePacked(tokenId); // encode tokenId
 
-    vm.expectEmit(true, true, true, true);
-    emit ProjectStateChanged(demoNode, false);
+        registrar.register(demoNode, "banana", address(this), blob);
+    }
 
-    registrar.setRootNodeState(demoNode, false);
-    assertTrue(registrar.nodeEnabled(demoNode) == false);
+    function testCannotSetupProjectAsNormalUser() public {
+        _setUpNode();
+        vm.expectRevert(bytes("UNAUTHORIZED"));
+        vm.prank(address(0xabc123));
+        registrar.setProjectNode(demoNode, IAuthoriser(address(0x0)), IRulesEngine(address(0x0)), true);
+    }
 
-    vm.expectEmit(true, true, true, true);
-    emit ProjectStateChanged(demoNode, true);
+    function testChangeNodeState() public {
+        _setUpNode();
+        assertTrue(registrar.nodeEnabled(demoNode));
 
-    registrar.setRootNodeState(demoNode, true);
-    assertTrue(registrar.nodeEnabled(demoNode));
-  }
+        IAuthoriser initialAuth = registrar.nodeAuthorisers(demoNode);
+        IRulesEngine initialRules = registrar.nodeRules(demoNode);
 
-  function testFailChangeStateOnUnintializedProject () public {
-    registrar.setRootNodeState(demoNode, true);
-  }
+        vm.expectEmit(true, true, true, true);
+        emit ProjectStateChanged(demoNode, address(initialAuth), address(initialRules), false);
 
-  function testValidLabel () public {
-    _setUpNode();
-    assertTrue(registrar.valid(demoNode, "orange"));
-  }
+        registrar.setProjectNode(demoNode, initialAuth, initialRules, false);
+        assertTrue(registrar.nodeEnabled(demoNode) == false);
 
-  function testFailCheckValidityWhenDisabled () public {
-    // fails because no rules have been setup for node
-    registrar.valid(demoNode, "strawberry");
-  }
+        IAuthoriser newAuth = new Authoriser();
+        IRulesEngine newRules = new RulesEngine();
 
-  function _setUpNode () private {
-    IAuthoriser authoriser = new Authoriser();
-    IRulesEngine rules = new RulesEngine();
-    registrar.addRootNode(demoNode, authoriser, rules);
-  }
+        vm.expectEmit(true, true, true, true);
+        emit ProjectStateChanged(demoNode, address(newAuth), address(newRules), true);
+
+        registrar.setProjectNode(demoNode, newAuth, newRules, true);
+        assertTrue(registrar.nodeEnabled(demoNode));
+    }
+
+    function testFuzzSetProjectNode(bytes32 node, address auth, address rules, bool enabled) public {
+        registrar.setProjectNode(node, IAuthoriser(auth), IRulesEngine(rules), enabled);
+
+        assertEq(address(registrar.nodeAuthorisers(node)), auth);
+        assertEq(address(registrar.nodeRules(node)), rules);
+        assertEq(registrar.nodeEnabled(node), enabled);
+    }
+
+    function testValidLabel() public {
+        _setUpNode();
+        assertTrue(registrar.valid(demoNode, "orange"));
+    }
+
+    function testFailCheckValidityWhenDisabled() public {
+        // fails because no rules have been setup for node
+        registrar.valid(demoNode, "strawberry");
+    }
+
+    function testCannotSendEthToContract() public {
+        address payable payableRegistrar = payable(address(registrar));
+        (bool success,) = payableRegistrar.call{value: 1 ether}("");
+        assertEq(success, false);
+    }
+
+    function testFallbackReverts() public {
+        (bool success,) = address(registrar).call(abi.encodeWithSignature("thisisntreal()"));
+        assertEq(success, false);
+    }
+
+    function _setUpNode() private {
+        IAuthoriser authoriser = new Authoriser();
+        IRulesEngine rules = new RulesEngine();
+        registrar.setProjectNode(demoNode, authoriser, rules, true);
+    }
 }
