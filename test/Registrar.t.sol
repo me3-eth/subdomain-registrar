@@ -13,11 +13,7 @@ contract Authoriser is IAuthoriser {
 }
 
 contract RulesEngine is IRulesEngine {
-    function isLabelValid(bytes32 node, string memory label)
-        external
-        view
-        returns (bool)
-    {
+    function isLabelValid(bytes32 node, string memory label) external view returns (bool) {
         string memory invalidLabel = "fail";
         if (keccak256(abi.encode(label)) == keccak256(abi.encode(invalidLabel))) {
             return false;
@@ -29,11 +25,7 @@ contract RulesEngine is IRulesEngine {
         return registrant;
     }
 
-    function profileResolver(
-        bytes32 node,
-        string memory label,
-        address registrant
-    ) external view returns (address) {
+    function profileResolver(bytes32 node, string memory label, address registrant) external view returns (address) {
         return address(0xabc123);
     }
 }

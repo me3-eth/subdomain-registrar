@@ -15,8 +15,8 @@ interface IENS {
         external
         virtual;
 
-		// https://docs.ens.domains/contract-api-reference/ens#get-owner
-		function owner(bytes32 node) external view returns (address);
+    // https://docs.ens.domains/contract-api-reference/ens#get-owner
+    function owner(bytes32 node) external view returns (address);
 }
 
 interface IRegistrar {
@@ -128,11 +128,7 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         return nodeRules[node].isLabelValid(node, label);
     }
 
-    function available(bytes32 node, string memory label)
-        internal
-        view
-        returns (bool)
-    {
+    function available(bytes32 node, string memory label) internal view returns (bool) {
         bytes32 fullNode = Utilities.namehash(node, Utilities.labelhash(label));
         return ens.owner(fullNode) == address(0x0);
     }
