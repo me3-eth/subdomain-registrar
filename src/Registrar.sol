@@ -3,16 +3,20 @@ pragma solidity 0.8.10;
 
 import {Owned} from "solmate/auth/Owned.sol";
 
-import "./IAuthoriser.sol";
+import {IAuthoriser} from "./IAuthoriser.sol";
+import {IRulesEngine} from "./IRulesEngine.sol";
 import {Utilities} from "./Utils.sol";
 
 interface IENS {
     event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
 
-    /// https://docs.ens.domains/contract-api-reference/ens#set-subdomain-record
+    // https://docs.ens.domains/contract-api-reference/ens#set-subdomain-record
     function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)
         external
         virtual;
+
+		// https://docs.ens.domains/contract-api-reference/ens#get-owner
+		function owner(bytes32 node) external view returns (address);
 }
 
 interface IRegistrar {
@@ -43,9 +47,13 @@ interface IRegistrar {
 contract Registrar is IRegistrar, Owned(msg.sender) {
     IENS private ens;
 
-    address public me3Resolver;
+    /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
+
+    /// @notice Lookup authoriser contract by project node
     mapping(bytes32 => IAuthoriser) public nodeAuthorisers;
+
+    /// @notice Lookup rules contract by project node
     mapping(bytes32 => IRulesEngine) public nodeRules;
 
     /// @notice A subnode has been registered
@@ -101,9 +109,15 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         isAuthorised(node, msg.sender, blob)
     {
         require(valid(node, label), "Invalid according to project");
-        // require(available(node, label), "Subdomain is not available");
+        require(available(node, label), "Label unavailable to register");
 
-        ens.setSubnodeRecord(node, Utilities.labelhash(label), owner, me3Resolver, 86400);
+        bytes32 hashedLabel = Utilities.labelhash(label);
+        address owner = nodeRules[node].subnodeOwner(msg.sender);
+        address resolver = nodeRules[node].profileResolver(node, label, msg.sender);
+        require(resolver != address(0x0), "Resolver must be set by project");
+
+        emit SubnodeRegistered(node, hashedLabel, owner, msg.sender);
+        ens.setSubnodeRecord(node, hashedLabel, owner, resolver, 86400);
     }
 
     /// @notice Check if a label is valid for a project
@@ -111,12 +125,15 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     /// @param label The subdomain label to validate
     /// @return bool True if the label is valid, according to the project rules, false otherwise
     function valid(bytes32 node, string memory label) public view returns (bool) {
-        return nodeRules[node].isLabelValid(label);
+        return nodeRules[node].isLabelValid(node, label);
     }
 
-    function available(bytes32 node, string memory label) public view returns (bool) {
-        // should check with node rules first
-        // then check against registry
-        return false;
+    function available(bytes32 node, string memory label)
+        internal
+        view
+        returns (bool)
+    {
+        bytes32 fullNode = Utilities.namehash(node, Utilities.labelhash(label));
+        return ens.owner(fullNode) == address(0x0);
     }
 }

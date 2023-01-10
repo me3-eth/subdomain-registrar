@@ -3,7 +3,8 @@ pragma solidity 0.8.10;
 
 import {EnsSetup} from "forge-ens/EnsSetup.sol";
 import "../src/Registrar.sol";
-import "../src/IAuthoriser.sol";
+import {IAuthoriser} from "../src/IAuthoriser.sol";
+import {IRulesEngine} from "../src/IRulesEngine.sol";
 
 contract Authoriser is IAuthoriser {
     function canRegister(bytes32 node, address sender, bytes[] memory blob) public view virtual returns (bool) {
@@ -12,8 +13,28 @@ contract Authoriser is IAuthoriser {
 }
 
 contract RulesEngine is IRulesEngine {
-    function isLabelValid(string memory label) external view returns (bool) {
+    function isLabelValid(bytes32 node, string memory label)
+        external
+        view
+        returns (bool)
+    {
+        string memory invalidLabel = "fail";
+        if (keccak256(abi.encode(label)) == keccak256(abi.encode(invalidLabel))) {
+            return false;
+        }
         return true;
+    }
+
+    function subnodeOwner(address registrant) external view returns (address) {
+        return registrant;
+    }
+
+    function profileResolver(
+        bytes32 node,
+        string memory label,
+        address registrant
+    ) external view returns (address) {
+        return address(0xabc123);
     }
 }
 

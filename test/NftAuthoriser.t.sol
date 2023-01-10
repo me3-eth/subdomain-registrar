@@ -44,17 +44,17 @@ contract NftAuthoriserTest is Test {
     }
 
     function testValidLabel() public {
-        assertTrue(authoriser.isLabelValid("banana"));
+        assertTrue(authoriser.isLabelValid(0x0, "banana"));
     }
 
     function testInvalidLabel() public {
         // max
-        assertTrue(authoriser.isLabelValid("hey") == false);
+        assertTrue(authoriser.isLabelValid(0x0, "hey") == false);
 
         // one under
-        assertTrue(authoriser.isLabelValid("hi") == false);
+        assertTrue(authoriser.isLabelValid(0x0, "hi") == false);
 
         // one over
-        assertTrue(authoriser.isLabelValid("helo"));
+        assertTrue(authoriser.isLabelValid(0x0, "helo"));
     }
 }
