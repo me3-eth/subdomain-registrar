@@ -2,6 +2,7 @@
 pragma solidity 0.8.10;
 
 import {EnsSetup} from "forge-ens/EnsSetup.sol";
+import {Authority} from "solmate/auth/Auth.sol";
 import "../src/Registrar.sol";
 import {IAuthoriser} from "../src/IAuthoriser.sol";
 import {IRulesEngine} from "../src/IRulesEngine.sol";
@@ -40,7 +41,7 @@ contract RegistrarTest is EnsSetup {
     function setUp() public override {
         super.setUp();
 
-        registrar = new Registrar(IENS(address(_ens)));
+        registrar = new Registrar(IENS(address(_ens)), Authority(address(0x0)));
         _ens.setApprovalForAll(address(registrar), true);
     }
 
