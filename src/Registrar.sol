@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
-import {Auth, Authority} from "solmate/auth/Auth.sol";
+import {Owned} from "solmate/auth/Owned.sol";
 
 import {IAuthoriser} from "./IAuthoriser.sol";
 import {IRulesEngine} from "./IRulesEngine.sol";
@@ -44,7 +44,7 @@ interface IRegistrar {
 /// @author charchar.eth
 /// @notice Provides third-party projects with a common subdomain registration function
 /// @dev 0.1.0
-contract Registrar is IRegistrar, Auth {
+contract Registrar is IRegistrar, Owned(msg.sender) {
     IENS private ens;
 
     /// @notice Lookup enabled/disabled state by project node
@@ -82,7 +82,7 @@ contract Registrar is IRegistrar, Auth {
         _;
     }
 
-    constructor(IENS _registry, Authority _authority) Auth(msg.sender, _authority) {
+    constructor(IENS _registry) {
         ens = _registry;
     }
 
@@ -91,7 +91,7 @@ contract Registrar is IRegistrar, Auth {
     /// @param authoriser The authorisation contract
     /// @param rules The rules around availability, validity, and usage
     /// @param enable Turn the project on or off
-    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external requiresAuth {
+    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external onlyOwner {
         emit ProjectStateChanged(node, address(authoriser), address(rules), enable);
 
         nodeAuthorisers[node] = authoriser;
