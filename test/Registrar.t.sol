@@ -47,6 +47,7 @@ contract RegistrarTest is EnsSetup {
     function testSetProjectNode() public {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngine();
+        registrar.setGateway(address(this));
 
         registrar.setProjectNode(demoNode, authoriser, rules, true);
 
@@ -83,7 +84,7 @@ contract RegistrarTest is EnsSetup {
 
     function testCannotSetupProjectAsNormalUser() public {
         _setUpNode();
-        vm.expectRevert(bytes("UNAUTHORIZED"));
+        vm.expectRevert(bytes("Caller does not have permission"));
         vm.prank(address(0xabc123));
         registrar.setProjectNode(demoNode, IAuthoriser(address(0x0)), IRulesEngine(address(0x0)), true);
     }
@@ -112,6 +113,7 @@ contract RegistrarTest is EnsSetup {
     }
 
     function testFuzzSetProjectNode(bytes32 node, address auth, address rules, bool enabled) public {
+        registrar.setGateway(address(this));
         registrar.setProjectNode(node, IAuthoriser(auth), IRulesEngine(rules), enabled);
 
         assertEq(address(registrar.nodeAuthorisers(node)), auth);
@@ -143,6 +145,7 @@ contract RegistrarTest is EnsSetup {
     function _setUpNode() private {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngine();
+        registrar.setGateway(address(this));
         registrar.setProjectNode(demoNode, authoriser, rules, true);
     }
 }

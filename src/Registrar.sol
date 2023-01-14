@@ -1,6 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.8.10;
 
+/*
+  __  __   U _____ u  _____
+U|' \/ '|u \| ___"|/ |___"/u
+\| |\/| |/  |  _|"   U_|_ \/
+ | |  | |   | |___    ___) |
+ |_|  |_|   |_____|  |____/
+<<,-,,-.    <<   >>   _// \\
+ (./  \.)  (__) (__) (__)(__)
+
+ ______     ______    _______    ________   ______   _________   ______     ________    ______
+/_____/\   /_____/\  /______/\  /_______/\ /_____/\ /________/\ /_____/\   /_______/\  /_____/\
+\:::_ \ \  \::::_\/_ \::::__\/__\__.::._\/ \::::_\/ \__.::.__\/ \:::_ \ \  \::: _  \ \ \:::_ \ \
+ \:(_) ) )_ \:\/___/\ \:\ /____/\  \::\ \   \:\/___/\  \::\ \    \:(_) ) )_ \::(_)  \ \ \:(_) ) )_
+  \: __ `\ \ \::___\/_ \:\\_  _\/  _\::\ \__ \_::._\:\  \::\ \    \: __ `\ \ \:: __  \ \ \: __ `\ \
+   \ \ `\ \ \ \:\____/\ \:\_\ \ \ /__\::\__/\  /____\:\  \::\ \    \ \ `\ \ \ \:.\ \  \ \ \ \ `\ \ \
+    \_\/ \_\/  \_____\/  \_____\/ \________\/  \_____\/   \__\/     \_\/ \_\/  \__\/\__\/  \_\/ \_\/
+
+what
+	> register subdomains for your NFT, DAO, or frenclub
+
+from
+	> charchar.me3.eth
+	> brendan.me3.eth
+*/
+
 import {Owned} from "solmate/auth/Owned.sol";
 
 import {IAuthoriser} from "./IAuthoriser.sol";
@@ -46,6 +71,7 @@ interface IRegistrar {
 /// @dev 0.1.0
 contract Registrar is IRegistrar, Owned(msg.sender) {
     IENS private ens;
+    address private gateway;
 
     /// @notice Lookup enabled/disabled state by project node
     mapping(bytes32 => bool) public nodeEnabled;
@@ -77,6 +103,12 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         _;
     }
 
+    modifier permissionedCaller() {
+        require(gateway != address(0x0), "Gateway must be set");
+        require(msg.sender == owner || msg.sender == gateway, "Caller does not have permission");
+        _;
+    }
+
     modifier registeredNode(bytes32 node) {
         require(nodeEnabled[node], "Node is not enabled");
         _;
@@ -86,12 +118,22 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         ens = _registry;
     }
 
+    /// @notice Change the address of the gateway which can register nodes
+    /// @param _gateway The new address
+    /// @dev Setting the gateway to address(0) will disable any project node registrations
+    function setGateway(address _gateway) external onlyOwner {
+        gateway = _gateway;
+    }
+
     /// @notice Add a new project to the directory
     /// @param node The project node that subdomains will be based on
     /// @param authoriser The authorisation contract
     /// @param rules The rules around availability, validity, and usage
     /// @param enable Turn the project on or off
-    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external onlyOwner {
+    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable)
+        external
+        permissionedCaller
+    {
         emit ProjectStateChanged(node, address(authoriser), address(rules), enable);
 
         nodeAuthorisers[node] = authoriser;
