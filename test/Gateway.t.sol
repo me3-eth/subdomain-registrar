@@ -28,43 +28,43 @@ contract RulesEngine is IRulesEngine {
 }
 
 contract Registrar is IRegistrar {
-    event SetProjectNodeCalled (bytes32 node, address authoriser, address rules, bool enable);
+    event SetProjectNodeCalled(bytes32 node, address authoriser, address rules, bool enable);
 
     function register(bytes32 node, string memory label, address owner, bytes[] memory authData) external {
-      // isn't called by gateway
+        // isn't called by gateway
     }
 
     function valid(bytes32 node, string memory label) external view returns (bool) {
-      // isn't called by gateway
-      return true;
+        // isn't called by gateway
+        return true;
     }
 
     function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external {
-      emit SetProjectNodeCalled(node, address(authoriser), address(rules), enable);
+        emit SetProjectNodeCalled(node, address(authoriser), address(rules), enable);
     }
 }
 
 contract BetaGatewayTest is Test {
-  GatewayBeta public gateway;
+    GatewayBeta public gateway;
 
-  event SetProjectNodeCalled (bytes32 node, address authoriser, address rules, bool enable);
+    event SetProjectNodeCalled(bytes32 node, address authoriser, address rules, bool enable);
 
-  function setUp() public {
-    IRegistrar registrar = new Registrar();
-    gateway = new GatewayBeta(address(registrar));
-  }
+    function setUp() public {
+        IRegistrar registrar = new Registrar();
+        gateway = new GatewayBeta(address(registrar));
+    }
 
-  function testRegister () public {
-    IAuthoriser authoriser = new Authoriser();
-    IRulesEngine rules = new RulesEngine();
+    function testRegister() public {
+        IAuthoriser authoriser = new Authoriser();
+        IRulesEngine rules = new RulesEngine();
 
-    gateway.register(bytes32(0x0), authoriser, rules);
-  }
+        gateway.register(bytes32(0x0), authoriser, rules);
+    }
 
-  function testFailRegister () public {
-    IAuthoriser authoriser = new Authoriser();
-    IRulesEngine rules = new RulesEngine();
+    function testFailRegister() public {
+        IAuthoriser authoriser = new Authoriser();
+        IRulesEngine rules = new RulesEngine();
 
-    gateway.register{value: 1}(bytes32(0x0), authoriser, rules);
-  }
+        gateway.register{value: 1}(bytes32(0x0), authoriser, rules);
+    }
 }
