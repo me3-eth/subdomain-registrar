@@ -1,0 +1,13 @@
+[book]
+src = 'src'
+title = 'me3 Subdomain Registrar'
+authors = ['charchar.eth']
+language = 'en'
+[output.html]
+no-section-label = true
+additional-js = ['solidity.min.js']
+additional-css = ['book.css']
+git-repository-url = 'https://github.com/me3-eth/protocol'
+
+[output.html.fold]
+enable = true

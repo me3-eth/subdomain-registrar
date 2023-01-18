@@ -1,7 +1,11 @@
 [profile.default]
-src = 'src'
-out = 'out'
-libs = ['lib']
-solc_version = '0.8.10'
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.10"
 
-# See more config options https://github.com/gakonst/foundry/tree/master/config
+[doc]
+out = "docs"
+title = "me3 Subdomain Registrar"
+book = "./book.toml"
+ignore = ["./test/*.t.sol"]
