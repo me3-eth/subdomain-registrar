@@ -46,13 +46,12 @@ contract GatewayBeta is Owned(msg.sender) {
     }
 
     /// @notice Register a project with the me3 subdomain registrar
-    /// @param projectEns The ENS name of the project, eg me3.eth
+    /// @param node The namehashed ENS node of the project, eg namehash(me3.eth)
     /// @param authoriser The authorisation contract
     /// @param rules The rules around availability, validity, and usage
-    function register(string projectEns, IAuthoriser authoriser, IRulesEngine rules) external payable {
+    function register(bytes32 node, IAuthoriser authoriser, IRulesEngine rules) external payable {
         require(msg.value == cost, "Please pay exactly");
 
-        bytes32 node = Utilities.namehash(projectEns);
-        registrar.setSubnodeRecord(node, authoriser, rules, true);
+        registrar.setProjectNode(node, authoriser, rules, true);
     }
 }
