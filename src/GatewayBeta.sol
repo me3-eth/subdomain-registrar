@@ -31,18 +31,28 @@ import {IAuthoriser} from "./IAuthoriser.sol";
 import {IRulesEngine} from "./IRulesEngine.sol";
 import {Utilities} from "./Utils.sol";
 
+/// @title me3 Beta Gateway
+/// @author charchar.eth
+/// @notice Beta Gateway allowing any project to signup to our subdomain registrar
+/// @dev 0.1.0
 contract GatewayBeta is Owned(msg.sender) {
-    uint256 public cost = 0;
     IRegistrar private registrar;
+
+    /// @notice the cost to signup
+    uint256 public cost = 0;
 
     constructor(address registrarContract) {
         registrar = IRegistrar(registrarContract);
     }
 
+    /// @notice Register a project with the me3 subdomain registrar
+    /// @param projectEns The ENS name of the project, eg me3.eth
+    /// @param authoriser The authorisation contract
+    /// @param rules The rules around availability, validity, and usage
     function register(string projectEns, IAuthoriser authoriser, IRulesEngine rules) external payable {
         require(msg.value == cost, "Please pay exactly");
-        // TODO decompose projectEns to node and label
 
-        registrar.setSubnodeRecord(bytes32(0x0), authoriser, rules, true);
+        bytes32 node = Utilities.namehash(projectEns);
+        registrar.setSubnodeRecord(node, authoriser, rules, true);
     }
 }
