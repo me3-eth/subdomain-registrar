@@ -9,6 +9,9 @@ import {GatewayBeta} from "../src/GatewayBeta.sol";
 address constant NFT_OWNER = address(0x1);
 bytes32 constant ME3_ETH_NODE = 0x868437061435f35898f8ed7fb95d62ca53b460f0bb9d1c6be3bfd796e38d8636;
 
+// Include methods that are only used in test preparation
+interface EnsRegistryForTests {}
+
 contract GreatNft is IERC721 {
     function ownerOf(uint256 id) external view returns (address owner) {
         return NFT_OWNER;
@@ -20,24 +23,30 @@ contract BetaIntegration is Test {
     address ENS_REGISTRY = vm.envAddress("ENS_REGISTRY");
 
     uint256 mainnetFork;
-    IENS registry = IENS(ENS_REGISTRY);
+    IENS ensRegistry = IENS(ENS_REGISTRY);
 
     IERC721 nft;
     Registrar registrar;
     GatewayBeta gateway;
+    NftAuthoriser nftControls;
 
     function setUp() public {
         mainnetFork = vm.createSelectFork(MAINNET_RPC_URL);
-        registry = IENS(ENS_REGISTRY);
+        ensRegistry = IENS(ENS_REGISTRY);
         nft = new GreatNft();
-        registrar = new Registrar(registry);
+        nftControls = new NftAuthoriser(address(nft));
+        nftControls.setResolver(address(0x7265736f6c766572));
+
+        registrar = new Registrar(ensRegistry);
         gateway = new GatewayBeta(address(registrar));
 
         registrar.setGateway(address(gateway));
+
+        // TODO use test interface
+        ensRegistry.setApprovalForAll(address(registrar), true);
     }
 
     function testRegisterProjectThroughGateway(address projectOwner, bytes32 node) public {
-        NftAuthoriser nftControls = new NftAuthoriser(address(nft));
         address controlAddr = address(nftControls);
 
         vm.prank(projectOwner);
@@ -49,7 +58,6 @@ contract BetaIntegration is Test {
     }
 
     function testCannotOverwriteRegistrationByDifferentUser() public {
-        NftAuthoriser nftControls = new NftAuthoriser(address(nft));
         address controlAddr = address(nftControls);
 
         address projectOwner = address(0x2);
@@ -68,7 +76,25 @@ contract BetaIntegration is Test {
         gateway.register(ME3_ETH_NODE, nftOverwrite, nftOverwrite);
     }
 
-    function testGatewayIsAllowedToCallRegistrar() public {}
+    function testCannotRegisterDueToAddressFilter() public {
+        GatewayBeta _gateway = new GatewayBeta(address(registrar));
 
-    function testCannotRegisterDueToAddressFilter() pulbic {}
+        address projectOwner = address(0x2);
+        vm.prank(projectOwner);
+        vm.expectRevert(bytes("Caller does not have permission"));
+        _gateway.register(ME3_ETH_NODE, nftControls, nftControls);
+    }
+
+    function testTokenHolderCanRegisterSubdomain() public {
+        // project registration
+        address projectOwner = address(0x2);
+        vm.prank(projectOwner);
+        gateway.register(ME3_ETH_NODE, nftControls, nftControls);
+
+        // create subdomain
+        bytes[] memory blob = new bytes[](1);
+        blob[0] = abi.encodePacked(uint256(1));
+        vm.prank(NFT_OWNER);
+        registrar.register(ME3_ETH_NODE, "tokenholderisme", NFT_OWNER, blob);
+    }
 }
