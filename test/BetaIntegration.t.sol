@@ -16,14 +16,15 @@ contract GreatNft is IERC721 {
 }
 
 contract BetaIntegration is Test {
-    uint256 mainnetFork;
-    IERC721 nft;
-    Registrar registrar;
-    IENS registry;
-    GatewayBeta gateway;
-
     string MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");
     address ENS_REGISTRY = vm.envAddress("ENS_REGISTRY");
+
+    uint256 mainnetFork;
+    IENS registry = IENS(ENS_REGISTRY);
+
+    IERC721 nft;
+    Registrar registrar;
+    GatewayBeta gateway;
 
     function setUp() public {
         mainnetFork = vm.createSelectFork(MAINNET_RPC_URL);
@@ -37,7 +38,37 @@ contract BetaIntegration is Test {
 
     function testRegisterProjectThroughGateway(address projectOwner, bytes32 node) public {
         NftAuthoriser nftControls = new NftAuthoriser(address(nft));
+        address controlAddr = address(nftControls);
+
         vm.prank(projectOwner);
         gateway.register(node, nftControls, nftControls);
+
+        assertEq(address(registrar.nodeRules(node)), controlAddr);
+        assertEq(address(registrar.nodeAuthorisers(node)), controlAddr);
+        assertTrue(registrar.nodeEnabled(node));
     }
+
+    function testCannotOverwriteRegistrationByDifferentUser() public {
+        NftAuthoriser nftControls = new NftAuthoriser(address(nft));
+        address controlAddr = address(nftControls);
+
+        address projectOwner = address(0x2);
+        vm.prank(projectOwner);
+        gateway.register(ME3_ETH_NODE, nftControls, nftControls);
+
+        assertEq(address(registrar.nodeRules(ME3_ETH_NODE)), controlAddr);
+        assertEq(address(registrar.nodeAuthorisers(ME3_ETH_NODE)), controlAddr);
+        assertTrue(registrar.nodeEnabled(ME3_ETH_NODE));
+
+        // setup overwrite
+        NftAuthoriser nftOverwrite = new NftAuthoriser(address(nft));
+
+        vm.prank(NFT_OWNER);
+        vm.expectRevert(bytes("Project owner mismatch"));
+        gateway.register(ME3_ETH_NODE, nftOverwrite, nftOverwrite);
+    }
+
+    function testGatewayIsAllowedToCallRegistrar() public {}
+
+    function testCannotRegisterDueToAddressFilter() pulbic {}
 }

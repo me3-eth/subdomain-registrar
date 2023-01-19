@@ -49,13 +49,13 @@ contract RegistrarTest is EnsSetup {
         IRulesEngine rules = new RulesEngine();
         registrar.setGateway(address(this));
 
-        registrar.setProjectNode(demoNode, authoriser, rules, true);
+        registrar.setProjectNode(demoNode, authoriser, rules, true, address(this));
 
         assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
         assertEq(address(registrar.nodeRules(demoNode)), address(rules));
         assertEq(registrar.nodeEnabled(demoNode), true);
 
-        registrar.setProjectNode(demoNode, authoriser, rules, false);
+        registrar.setProjectNode(demoNode, authoriser, rules, false, address(this));
 
         assertEq(address(registrar.nodeAuthorisers(demoNode)), address(authoriser));
         assertEq(address(registrar.nodeRules(demoNode)), address(rules));
@@ -86,7 +86,7 @@ contract RegistrarTest is EnsSetup {
         _setUpNode();
         vm.expectRevert(bytes("Caller does not have permission"));
         vm.prank(address(0xabc123));
-        registrar.setProjectNode(demoNode, IAuthoriser(address(0x0)), IRulesEngine(address(0x0)), true);
+        registrar.setProjectNode(demoNode, IAuthoriser(address(0x0)), IRulesEngine(address(0x0)), true, address(this));
     }
 
     function testChangeNodeState() public {
@@ -99,7 +99,7 @@ contract RegistrarTest is EnsSetup {
         vm.expectEmit(true, true, true, true);
         emit ProjectStateChanged(demoNode, address(initialAuth), address(initialRules), false);
 
-        registrar.setProjectNode(demoNode, initialAuth, initialRules, false);
+        registrar.setProjectNode(demoNode, initialAuth, initialRules, false, address(this));
         assertTrue(registrar.nodeEnabled(demoNode) == false);
 
         IAuthoriser newAuth = new Authoriser();
@@ -108,13 +108,13 @@ contract RegistrarTest is EnsSetup {
         vm.expectEmit(true, true, true, true);
         emit ProjectStateChanged(demoNode, address(newAuth), address(newRules), true);
 
-        registrar.setProjectNode(demoNode, newAuth, newRules, true);
+        registrar.setProjectNode(demoNode, newAuth, newRules, true, address(this));
         assertTrue(registrar.nodeEnabled(demoNode));
     }
 
     function testFuzzSetProjectNode(bytes32 node, address auth, address rules, bool enabled) public {
         registrar.setGateway(address(this));
-        registrar.setProjectNode(node, IAuthoriser(auth), IRulesEngine(rules), enabled);
+        registrar.setProjectNode(node, IAuthoriser(auth), IRulesEngine(rules), enabled, address(this));
 
         assertEq(address(registrar.nodeAuthorisers(node)), auth);
         assertEq(address(registrar.nodeRules(node)), rules);
@@ -146,6 +146,6 @@ contract RegistrarTest is EnsSetup {
         IAuthoriser authoriser = new Authoriser();
         IRulesEngine rules = new RulesEngine();
         registrar.setGateway(address(this));
-        registrar.setProjectNode(demoNode, authoriser, rules, true);
+        registrar.setProjectNode(demoNode, authoriser, rules, true, address(this));
     }
 }

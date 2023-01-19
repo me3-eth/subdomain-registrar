@@ -39,7 +39,9 @@ contract Registrar is IRegistrar {
         return true;
     }
 
-    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external {
+    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable, address projectOwner)
+        external
+    {
         emit SetProjectNodeCalled(node, address(authoriser), address(rules), enable);
     }
 }

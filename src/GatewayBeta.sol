@@ -52,6 +52,6 @@ contract GatewayBeta is Owned(msg.sender) {
     function register(bytes32 node, IAuthoriser authoriser, IRulesEngine rules) external payable {
         require(msg.value == cost, "Please pay exactly");
 
-        registrar.setProjectNode(node, authoriser, rules, true);
+        registrar.setProjectNode(node, authoriser, rules, true, msg.sender);
     }
 }

@@ -61,7 +61,9 @@ interface IRegistrar {
     /// @param authoriser The contract that will perform authorisation
     /// @param rules The contract that will provide rules and validation
     /// @param enable Allow project auth and rules to run
-    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external;
+    /// @param projectOwner The owner of the project and the address which is authorised to make updates
+    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable, address projectOwner)
+        external;
 }
 
 /// @title me3 Subdomain Registrar
@@ -80,6 +82,9 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
 
     /// @notice Lookup rules contract by project node
     mapping(bytes32 => IRulesEngine) public nodeRules;
+
+    /// @notice Lookup owner address by project node
+    mapping(bytes32 => address) public nodeOwners;
 
     /// @notice A subnode has been registered
     /// @param node The fully qualified, namehashed ENS name for the project
@@ -129,12 +134,16 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
     /// @param authoriser The authorisation contract
     /// @param rules The rules around availability, validity, and usage
     /// @param enable Turn the project on or off
-    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable)
+    /// @param projectOwner The owner of the project and the address which is authorised to make updates
+    function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable, address projectOwner)
         external
         permissionedCaller
     {
+        address currentOwner = nodeOwners[node];
+        require(currentOwner == projectOwner || currentOwner == address(0x0), "Project owner mismatch");
         emit ProjectStateChanged(node, address(authoriser), address(rules), enable);
 
+        nodeOwners[node] = projectOwner;
         nodeAuthorisers[node] = authoriser;
         nodeRules[node] = rules;
         nodeEnabled[node] = enable;
