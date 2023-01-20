@@ -118,8 +118,8 @@ contract Registrar is IRegistrar, Owned(msg.sender) {
         _;
     }
 
-    constructor(IENS _registry) {
-        ens = _registry;
+    constructor(address _registry) {
+        ens = IENS(_registry);
     }
 
     /// @notice Change the address of the gateway which can register nodes

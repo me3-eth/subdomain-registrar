@@ -40,7 +40,7 @@ contract RegistrarTest is EnsSetup {
     function setUp() public override {
         super.setUp();
 
-        registrar = new Registrar(IENS(address(_ens)));
+        registrar = new Registrar(address(_ens));
         _ens.setApprovalForAll(address(registrar), true);
     }
 

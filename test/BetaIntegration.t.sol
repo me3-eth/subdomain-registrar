@@ -2,7 +2,7 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
-import {Registrar, IENS, IRegistrar} from "../src/Registrar.sol";
+import {Registrar, IRegistrar} from "../src/Registrar.sol";
 import {NftAuthoriser, IERC721} from "../src/NftAuthoriser.sol";
 import {GatewayBeta} from "../src/GatewayBeta.sol";
 
@@ -10,7 +10,15 @@ address constant NFT_OWNER = address(0x1);
 bytes32 constant ME3_ETH_NODE = 0x868437061435f35898f8ed7fb95d62ca53b460f0bb9d1c6be3bfd796e38d8636;
 
 // Include methods that are only used in test preparation
-interface EnsRegistryForTests {}
+interface EnsRegistryForTests {
+    function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)
+        external
+        virtual;
+
+    function owner(bytes32 node) external view returns (address);
+
+    function setApprovalForAll(address operator, bool approved) external;
+}
 
 contract GreatNft is IERC721 {
     function ownerOf(uint256 id) external view returns (address owner) {
@@ -23,7 +31,7 @@ contract BetaIntegration is Test {
     address ENS_REGISTRY = vm.envAddress("ENS_REGISTRY");
 
     uint256 mainnetFork;
-    IENS ensRegistry = IENS(ENS_REGISTRY);
+    EnsRegistryForTests ensRegistry = EnsRegistryForTests(ENS_REGISTRY);
 
     IERC721 nft;
     Registrar registrar;
@@ -31,24 +39,26 @@ contract BetaIntegration is Test {
     NftAuthoriser nftControls;
 
     function setUp() public {
-        mainnetFork = vm.createSelectFork(MAINNET_RPC_URL);
-        ensRegistry = IENS(ENS_REGISTRY);
+        mainnetFork = vm.createSelectFork(MAINNET_RPC_URL, 16441759);
         nft = new GreatNft();
         nftControls = new NftAuthoriser(address(nft));
         nftControls.setResolver(address(0x7265736f6c766572));
 
-        registrar = new Registrar(ensRegistry);
+        registrar = new Registrar(address(ensRegistry));
         gateway = new GatewayBeta(address(registrar));
 
         registrar.setGateway(address(gateway));
 
-        // TODO use test interface
+        address me3NodeOwner = address(0xF638Bf55B9B7B30A7f3286245E13f6198FCc9879);
+        vm.prank(me3NodeOwner);
         ensRegistry.setApprovalForAll(address(registrar), true);
     }
 
-    function testRegisterProjectThroughGateway(address projectOwner, bytes32 node) public {
+    function testRegisterProjectThroughGateway() public {
         address controlAddr = address(nftControls);
 
+        address projectOwner = address(0x2);
+        bytes32 node = ME3_ETH_NODE;
         vm.prank(projectOwner);
         gateway.register(node, nftControls, nftControls);
 
@@ -96,5 +106,19 @@ contract BetaIntegration is Test {
         blob[0] = abi.encodePacked(uint256(1));
         vm.prank(NFT_OWNER);
         registrar.register(ME3_ETH_NODE, "tokenholderisme", NFT_OWNER, blob);
+    }
+
+    function testCannotRegisterSubdomainAsRando() public {
+        // project registration
+        address projectOwner = address(0x2);
+        vm.prank(projectOwner);
+        gateway.register(ME3_ETH_NODE, nftControls, nftControls);
+
+        // create subdomain
+        bytes[] memory blob = new bytes[](1);
+        blob[0] = abi.encodePacked(uint256(1));
+        address rando = vm.makeAddr("random");
+        vm.prank(rando);
+        registrar.register(ME3_ETH_NODE, "tokenholderisme", rando, blob);
     }
 }
