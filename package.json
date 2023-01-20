@@ -1,28 +1,27 @@
 {
-  "name": "protocol",
+  "name": "@me3/subdomain-registrar",
   "version": "0.0.0",
-  "description": "Glossary:",
+  "description": "The me3 Subdomain Registrar contract ABIs",
   "main": "index.js",
-  "directories": {
-    "doc": "docs",
-    "lib": "lib",
-    "test": "test"
-  },
-  "scripts": {
-    "lint": "solhint 'src/**/*.sol'",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "keywords": [
+    "me3",
+    "ens",
+    "subdomain",
+    "subnode"
+  ],
+  "files": [
+    "out/GatewayBeta.sol/GatewayBeta.json",
+    "out/NftAuthoriser.sol/NftAuthoriser.json",
+    "out/Registrar.sol/Registrar.json"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/me3-eth/protocol.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "charchar.eth",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/me3-eth/protocol/issues"
   },
-  "homepage": "https://github.com/me3-eth/protocol#readme",
-  "devDependencies": {
-    "solhint": "^3.3.7"
-  }
+  "homepage": "https://github.com/me3-eth/protocol#readme"
 }
