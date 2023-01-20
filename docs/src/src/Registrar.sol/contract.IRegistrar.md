@@ -1,5 +1,5 @@
 # IRegistrar
-[Git Source](https://github.com/me3-eth/protocol/blob/cfce1d62c5d591e289c28d1f07564311fdc99c8d/src/Registrar.sol)
+[Git Source](https://github.com/me3-eth/protocol/blob/cac16b9d508f5af9fbf4095cd2346a7a6400c5e8/src/Registrar.sol)
 
 
 ## Functions
@@ -49,7 +49,8 @@ Register a project as a subdomain provider
 
 
 ```solidity
-function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable) external;
+function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable, address projectOwner)
+    external;
 ```
 **Parameters**
 
@@ -59,5 +60,6 @@ function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules
 |`authoriser`|`IAuthoriser`|The contract that will perform authorisation|
 |`rules`|`IRulesEngine`|The contract that will provide rules and validation|
 |`enable`|`bool`|Allow project auth and rules to run|
+|`projectOwner`|`address`|The owner of the project and the address which is authorised to make updates|
 
 

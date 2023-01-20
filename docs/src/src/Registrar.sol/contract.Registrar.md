@@ -1,5 +1,5 @@
 # Registrar
-[Git Source](https://github.com/me3-eth/protocol/blob/cfce1d62c5d591e289c28d1f07564311fdc99c8d/src/Registrar.sol)
+[Git Source](https://github.com/me3-eth/protocol/blob/cac16b9d508f5af9fbf4095cd2346a7a6400c5e8/src/Registrar.sol)
 
 **Inherits:**
 [IRegistrar](/src/Registrar.sol/contract.IRegistrar.md), Owned
@@ -54,6 +54,15 @@ mapping(bytes32 => IRulesEngine) public nodeRules;
 ```
 
 
+### nodeOwners
+Lookup owner address by project node
+
+
+```solidity
+mapping(bytes32 => address) public nodeOwners;
+```
+
+
 ## Functions
 ### isAuthorised
 
@@ -80,7 +89,7 @@ modifier registeredNode(bytes32 node);
 
 
 ```solidity
-constructor(IENS _registry);
+constructor(address _registry);
 ```
 
 ### setGateway
@@ -106,7 +115,7 @@ Add a new project to the directory
 
 
 ```solidity
-function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable)
+function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules, bool enable, address projectOwner)
     external
     permissionedCaller;
 ```
@@ -118,6 +127,7 @@ function setProjectNode(bytes32 node, IAuthoriser authoriser, IRulesEngine rules
 |`authoriser`|`IAuthoriser`|The authorisation contract|
 |`rules`|`IRulesEngine`|The rules around availability, validity, and usage|
 |`enable`|`bool`|Turn the project on or off|
+|`projectOwner`|`address`|The owner of the project and the address which is authorised to make updates|
 
 
 ### register

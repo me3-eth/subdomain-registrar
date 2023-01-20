@@ -2,7 +2,7 @@
 
 # Contents
 - [lib](/src/lib)
-- [GatewayBeta](Gateway.sol/contract.GatewayBeta.md)
+- [GatewayBeta](GatewayBeta.sol/contract.GatewayBeta.md)
 - [IAuthoriser](IAuthoriser.sol/contract.IAuthoriser.md)
 - [IRulesEngine](IRulesEngine.sol/contract.IRulesEngine.md)
 - [IERC721](NftAuthoriser.sol/contract.IERC721.md)

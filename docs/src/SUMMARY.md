@@ -3,7 +3,7 @@
 # src
   - [❱ lib](src/lib/README.md)
     - [BlobParser](src/lib/BlobParser.sol/contract.BlobParser.md)
-  - [GatewayBeta](src/Gateway.sol/contract.GatewayBeta.md)
+  - [GatewayBeta](src/GatewayBeta.sol/contract.GatewayBeta.md)
   - [IAuthoriser](src/IAuthoriser.sol/contract.IAuthoriser.md)
   - [IRulesEngine](src/IRulesEngine.sol/contract.IRulesEngine.md)
   - [IERC721](src/NftAuthoriser.sol/contract.IERC721.md)

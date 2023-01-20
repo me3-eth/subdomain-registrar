@@ -1,4 +1,6 @@
-# me3 Protocol
+# me3 Subdomain Registrar
+
+Allow users of your NFT community, DAO, or club to register subdomains and user profiles under your ENS name.
 
 Glossary:
 
@@ -21,22 +23,6 @@ NFT projects have the following set of controls for subdomain registration:
 * validate that a subdomain can be registered
 * decide who the subdomain owner is (the project or the registrant)
 
-## IAuthoriser
-
-A generic interface for checking registration and editing authorisation. Implementers are passed the node, sender, and a data blob. The data blob structure is implementation specific.
-
-The introduction of the data blob means a lot more checks are required on the implementer contract to validate authorisation in a safe way.
-
-### Functions
-
-#### `canRegister(bytes32,address,bytes[]) external view returns (bool)`
-
-Parameters:
-
-* `bytes32 node` - The project node (second-level) which the domain will be registered under. Useful if the authoriser contract is multi-tenant.
-* `address sender` - The user that is requesting registration of the subdomain
-* `bytes[] blob` - The implementation-specific data blob
-
 ## NFT Authoriser
 
 ### Features
@@ -53,46 +39,3 @@ Subdomains...
 * user who mints the subdomain does not own it
 * transferring the related token Id transfers edit access to new token holder
 
-### Functions
-
-#### canRegister
-
-Follows [IAuthoriser](#iauthoriser) interface.
-
-Blob structure (in pseudocode):
-
-```
-[
-  asBytes(tokenId)
-]
-```
-
-Blob structure (in javascript):
-
-```js
-const tokenId = '3728' // most apis return a string
-const blob = [
-  BigNumber.from(tokenId).toHexString()
-]
-```
-
-#### isLabelValid
-
-#### labelTokenId
-
-#### nft
-
-Public variable, is the address of the NFT that this authoriser relies on.
-
-## Registrar
-
-### Functions
-
-#### Register
-
-The register reverts in the following cases:
-* if a project has not yet been enabled
-* if the project determines the registrant is not authorised
-* if the subdomain is valid, according to the project
-
-![registration flow](docs/registration-flow.png)
