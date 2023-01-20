@@ -117,7 +117,8 @@ contract BetaIntegration is Test {
         // create subdomain
         bytes[] memory blob = new bytes[](1);
         blob[0] = abi.encodePacked(uint256(1));
-        address rando = vm.makeAddr("random");
+        address rando = makeAddr("random");
+        vm.expectRevert(bytes("User is not authorised")); // From Registrar
         vm.prank(rando);
         registrar.register(ME3_ETH_NODE, "tokenholderisme", rando, blob);
     }
