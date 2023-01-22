@@ -20,8 +20,9 @@ contract NftAuthoriser is IAuthoriser, IRulesEngine, Owned(msg.sender) {
     /// @notice The current profile resolver
     address private resolver;
 
-    constructor(address _nft) {
+    constructor(address _nft, address _resolver) {
         nft = IERC721(_nft);
+        resolver = _resolver;
     }
 
     /// @inheritdoc IAuthoriser

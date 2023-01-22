@@ -41,7 +41,7 @@ contract BetaIntegration is Test {
     function setUp() public {
         mainnetFork = vm.createSelectFork(MAINNET_RPC_URL, 16441759);
         nft = new GreatNft();
-        nftControls = new NftAuthoriser(address(nft));
+        nftControls = new NftAuthoriser(address(nft), address(0x0));
         nftControls.setResolver(address(0x7265736f6c766572));
 
         registrar = new Registrar(address(ensRegistry));
@@ -79,7 +79,7 @@ contract BetaIntegration is Test {
         assertTrue(registrar.nodeEnabled(ME3_ETH_NODE));
 
         // setup overwrite
-        NftAuthoriser nftOverwrite = new NftAuthoriser(address(nft));
+        NftAuthoriser nftOverwrite = new NftAuthoriser(address(nft), address(0x0));
 
         vm.prank(NFT_OWNER);
         vm.expectRevert(bytes("Project owner mismatch"));
