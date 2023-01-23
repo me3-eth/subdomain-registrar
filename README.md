@@ -1,6 +1,6 @@
 # me3 Subdomain Registrar
 
-Allow users of your NFT community, DAO, or club to register subdomains and user profiles under your ENS name.
+Allow users of your NFT community, DAO, or club to register subdomains and user profiles under your project's ENS name.
 
 Glossary:
 
@@ -10,10 +10,10 @@ Glossary:
 
 ## Deployments
 
-* Registrar: `0x9f2daf90c4323b529c31a40520a5fa63eb601b84` on:
-  * Rinkeby
-* NftAuthoriser: `0x0c24293b6d874e830789ed0948bed9935d4a4fdb` on:
-  * Rinkeby
+| Contract | Goerli | Mainnet |
+| ---      | ---    | ---     |
+|Registrar|`0x8EaE99Cdb7D8889e0c12d650De138983895C22F1`||
+|Gateway Beta|`0x201C5AA9556fDf8D5f6cDa1C59735Dd7151EEcEf`||
 
 ## Project Controls
 
