@@ -36,9 +36,3 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
-
-      - if: steps.publish.outputs.type != 'none'
-        run: echo "Version published: ${{ steps.publish.outputs.version }}"
-
-      - if: steps.publish.outputs.type == 'none'
-        run: echo "Failed to publish"
