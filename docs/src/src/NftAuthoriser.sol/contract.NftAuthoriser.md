@@ -1,5 +1,5 @@
 # NftAuthoriser
-[Git Source](https://github.com/me3-eth/protocol/blob/cac16b9d508f5af9fbf4095cd2346a7a6400c5e8/src/NftAuthoriser.sol)
+[Git Source](https://github.com/me3-eth/protocol/blob/7b584c2e2f000cf0ce4649d2bd0bc874fd19925a/src/NftAuthoriser.sol)
 
 **Inherits:**
 [IAuthoriser](/src/IAuthoriser.sol/contract.IAuthoriser.md), [IRulesEngine](/src/IRulesEngine.sol/contract.IRulesEngine.md), Owned
@@ -34,7 +34,7 @@ address private resolver;
 
 
 ```solidity
-constructor(address _nft);
+constructor(address _nft, address _resolver);
 ```
 
 ### canRegister
