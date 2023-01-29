@@ -10,10 +10,10 @@ Glossary:
 
 ## Deployments
 
-| Contract | Goerli | Mainnet |
-| ---      | ---    | ---     |
-|Registrar|`0x8EaE99Cdb7D8889e0c12d650De138983895C22F1`||
-|Gateway Beta|`0x201C5AA9556fDf8D5f6cDa1C59735Dd7151EEcEf`||
+| Contract     | Address                                      |
+| ---          | ---                                          |
+| Registrar    | `0x8E424e5B34C676E5BE793d82E3fAA75B26693264` |
+| Gateway Beta | `0x809f89b26347156ff3f8f2842780ddafb1c4acde` |
 
 ## Project Controls
 

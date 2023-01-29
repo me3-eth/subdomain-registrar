@@ -23,5 +23,10 @@
   "bugs": {
     "url": "https://github.com/me3-eth/protocol/issues"
   },
-  "homepage": "https://github.com/me3-eth/protocol#readme"
+  "homepage": "https://github.com/me3-eth/protocol#readme",
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "w3name": "^1.0.7",
+    "web3.storage": "^4.4.0"
+  }
 }

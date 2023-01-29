@@ -5,6 +5,7 @@
 
 cache/
 out/
+broadcast/
 
 node_modules/
 package-lock.json
